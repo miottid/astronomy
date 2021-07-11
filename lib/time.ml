@@ -43,3 +43,17 @@ let%test "date_of_easter 2023" = date_of_easter 2023 = (9, 4)
 let%test "date_of_easter 2024" = date_of_easter 2024 = (31, 3)
 
 let%test "date_of_easter 2025" = date_of_easter 2025 = (20, 4)
+
+let greenwich_to_julian_date day month year =
+  Printf.printf "Converting %f/%d/%d\n" day month year;
+  let yd = if month < 3 then year - 1 else year in
+  Printf.printf "yd: %d\n" yd;
+  let md = if month < 3 then month + 12 else month in
+  Printf.printf "md: %d\n" md;
+  let a = yd / 100 in
+  Printf.printf "a: %d\n" a;
+  let c =
+    if yd < 0 then int_of_float ((365.25 *. float_of_int yd) -. 0.75)
+    else int_of_float (365.25 *. float_of_int yd)
+  in
+  Printf.printf "c: %d\n" c
