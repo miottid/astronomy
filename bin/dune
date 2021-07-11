@@ -1,2 +1,3 @@
 (executable
- (name astro))
+ (name astro)
+ (libraries lib))
