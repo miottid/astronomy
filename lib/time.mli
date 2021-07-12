@@ -8,4 +8,7 @@ val greenwich_to_julian_date : float -> int -> int -> float
 (* [greenwich_to_julian_date day month year] returns the Julian date. *)
 
 val julian_to_greenwich_date : float -> float * int * int
-(* [julian_to_greenwich_date julian] converts a julian date into greenwich *)
+(* [julian_to_greenwich_date julian] converts a julian date into greenwich. *)
+
+val decimal_to_hms : float -> int * int * int
+(* [decimal_to_hms hours] converts decimal hours to hours, minutes and seconds. *)

@@ -85,7 +85,24 @@ let julian_to_greenwich_date julian =
   let day = c -. e +. f -. float_of_int (truncate (30.6001 *. g)) in
   let month = if g < 13.5 then g -. 1. else g -. 13. in
   let year = if month > 2.5 then d -. 4716. else d -. 4715. in
-  (day, int_of_float month, int_of_float year)
+  (day, truncate month, truncate year)
 
 let%test "julian_to_greenwich_date" =
   julian_to_greenwich_date 2455002.25 = (19.75, 6, 2009)
+
+let decimal_to_hms hours =
+  let unsigned_decimal = Float.abs hours in
+  let total_seconds = truncate (unsigned_decimal *. 3600.) in
+  let seconds = total_seconds mod 60 in
+  let corrected_seconds = if seconds = 60 then 0 else seconds in
+  let corrected_remainder =
+    if seconds = 60 then total_seconds + 60 else total_seconds
+  in
+  let minutes = corrected_remainder / 60 mod 60 in
+  let unsigned_hours = corrected_remainder / 3600 in
+  let signed_hours =
+    if hours < 0. then -1 * unsigned_hours else unsigned_hours
+  in
+  (signed_hours, minutes, corrected_seconds)
+
+let%test "decimal_to_hms" = decimal_to_hms 18.52416667 = (18, 31, 27)
