@@ -6,3 +6,6 @@ val date_of_easter : int -> int * int
 
 val greenwich_to_julian_date : float -> int -> int -> float
 (* [greenwich_to_julian_date day month year] returns the Julian date. *)
+
+val julian_to_greenwich_date : float -> float * int * int
+(* [julian_to_greenwich_date julian] converts a julian date into greenwich *)
