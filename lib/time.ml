@@ -42,6 +42,8 @@ let%test "date_of_easter 2024" = date_of_easter 2024 = (31, 3)
 
 let%test "date_of_easter 2025" = date_of_easter 2025 = (20, 4)
 
+let truncate_float f = float_of_int (truncate f)
+
 let greenwich_to_julian_date day month year =
   let yd = if month < 3 then year - 1 else year
   and md = if month < 3 then month + 12 else month in
@@ -55,13 +57,35 @@ let greenwich_to_julian_date day month year =
     else 0
   in
   let c =
-    if yd < 0 then int_of_float ((365.25 *. float_of_int yd) -. 0.75)
-    else int_of_float (365.25 *. float_of_int yd)
-  and d = int_of_float (30.6001 *. (float_of_int md +. 1.)) in
-  float_of_int (b + c + d) +. day +. 1720994.5
+    if yd < 0 then truncate_float ((365.25 *. float_of_int yd) -. 0.75)
+    else truncate_float (365.25 *. float_of_int yd)
+  and d = truncate_float (30.6001 *. (float_of_int md +. 1.)) in
+  float_of_int b +. c +. d +. day +. 1720994.5
 
 let%test "greenwich_to_julian_date#1" =
   greenwich_to_julian_date 19.75 6 2009 = 2455002.25
 
 let%test "greenwich_to_julian_date#2" =
   greenwich_to_julian_date 12.625 7 2021 = 2459408.125
+
+let julian_to_greenwich_date julian =
+  let julian = julian +. 0.5 in
+  let i = truncate_float julian in
+  let f = julian -. i in
+  let b =
+    if i > 2299160. then
+      let a = truncate_float ((i -. 1867216.25) /. 36524.25) in
+      i +. a -. (a /. 4.) +. 1.
+    else i
+  in
+  let c = b +. 1524. in
+  let d = truncate_float ((c -. 122.1) /. 365.25) in
+  let e = truncate_float (365.25 *. d) in
+  let g = truncate_float ((c -. e) /. 30.6001) in
+  let day = c -. e +. f -. float_of_int (truncate (30.6001 *. g)) in
+  let month = if g < 13.5 then g -. 1. else g -. 13. in
+  let year = if month > 2.5 then d -. 4716. else d -. 4715. in
+  (day, int_of_float month, int_of_float year)
+
+let%test "julian_to_greenwich_date" =
+  julian_to_greenwich_date 2455002.25 = (19.75, 6, 2009)
