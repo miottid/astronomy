@@ -58,7 +58,7 @@ let%test "date_of_easter 2025" = date_of_easter 2025 = (20, 4)
 
 let truncate_float f = float_of_int (truncate f)
 
-let julian_of_greenwich (day, month, year) =
+let julian_date_of_greenwich (day, month, year) =
   let yd = if month < 3 then year - 1 else year
   and md = if month < 3 then month + 12 else month in
   let a = yd / 100 in
@@ -76,13 +76,13 @@ let julian_of_greenwich (day, month, year) =
   and d = truncate_float (30.6001 *. (float_of_int md +. 1.)) in
   float_of_int b +. c +. d +. day +. 1720994.5
 
-let%test "julian_of_greenwich#1" =
-  julian_of_greenwich (19.75, 6, 2009) = 2455002.25
+let%test "julian_date_of_greenwich#1" =
+  julian_date_of_greenwich (19.75, 6, 2009) = 2455002.25
 
-let%test "julian_of_greenwich#2" =
-  julian_of_greenwich (12.625, 7, 2021) = 2459408.125
+let%test "julian_date_of_greenwich#2" =
+  julian_date_of_greenwich (12.625, 7, 2021) = 2459408.125
 
-let greenwich_of_julian julian =
+let greenwich_date_of_julian julian =
   let julian = julian +. 0.5 in
   let i = truncate_float julian in
   let f = julian -. i in
@@ -101,10 +101,10 @@ let greenwich_of_julian julian =
   let year = if month > 2.5 then d -. 4716. else d -. 4715. in
   (day, truncate month, truncate year)
 
-let%test "greenwich_of_julian" =
-  greenwich_of_julian 2455002.25 = (19.75, 6, 2009)
+let%test "greenwich_date_of_julian" =
+  greenwich_date_of_julian 2455002.25 = (19.75, 6, 2009)
 
-let hms_of_decimal hours : hms =
+let hms_of_decimal_hours hours : hms =
   let unsigned_decimal = Float.abs hours in
   let total_seconds = truncate (unsigned_decimal *. 3600.) in
   let seconds = total_seconds mod 60 in
@@ -121,9 +121,9 @@ let hms_of_decimal hours : hms =
     float_of_int minutes,
     float_of_int corrected_seconds )
 
-let%test "hms_of_decimal" = hms_of_decimal 18.52416667 = (18., 31., 27.)
+let%test "hms_of_decimal" = hms_of_decimal_hours 18.52416667 = (18., 31., 27.)
 
-let decimal_of_hms (hours, minutes, seconds) =
+let decimal_hours_of_hms (hours, minutes, seconds) =
   let a = Float.abs seconds /. 60. in
   let b = (Float.abs minutes +. a) /. 60. in
   let c = Float.abs hours +. b in
@@ -135,6 +135,7 @@ let weekday_of_julian_date julian =
 
 let%test "weekday_of_julian_date" = weekday_of_julian_date 2455001.5 = 5
 
-let weekday_of_date date = weekday_of_julian_date (julian_of_greenwich date)
+let weekday_of_date date =
+  weekday_of_julian_date (julian_date_of_greenwich date)
 
 let%test "weekday_of_date" = weekday_of_date (19., 6, 2009) = 5
