@@ -24,3 +24,9 @@ val hms_of_decimal : float -> hms
 
 val decimal_of_hms : hms -> float
 (* [decimal_of_hms hours minutes seconds] converts hms to decimal hours. *)
+
+val weekday_of_julian_date : float -> int
+(* [weekday_of_julian_date jd] returns the weekday number at Greenwich. Sunday = 0. *)
+
+val weekday_of_date : date -> int
+(* [weekday_of_date date] returns the weekday number at Greenwich. Sunday = 0. *)
