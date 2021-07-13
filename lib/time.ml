@@ -42,19 +42,19 @@ let date_of_easter year =
   and day_of_month = ((h + l - (7 * m) + 114) mod 31) + 1 in
   (day_of_month, month_number)
 
-let%test "date_of_easter 2019" = date_of_easter 2019 = (21, 4)
-
-let%test "date_of_easter 2020" = date_of_easter 2020 = (12, 4)
-
-let%test "date_of_easter 2021" = date_of_easter 2021 = (4, 4)
-
-let%test "date_of_easter 2022" = date_of_easter 2022 = (17, 4)
-
-let%test "date_of_easter 2023" = date_of_easter 2023 = (9, 4)
-
-let%test "date_of_easter 2024" = date_of_easter 2024 = (31, 3)
-
-let%test "date_of_easter 2025" = date_of_easter 2025 = (20, 4)
+let%test "date_of_easter" =
+  let dataset =
+    [
+      (2019, (21, 4));
+      (2020, (12, 4));
+      (2021, (4, 4));
+      (2022, (17, 4));
+      (2023, (9, 4));
+      (2024, (31, 3));
+      (2025, (20, 4));
+    ]
+  in
+  List.fold_left (fun acc (y, d) -> acc && date_of_easter y = d) true dataset
 
 let truncate_float f = float_of_int (truncate f)
 
@@ -76,11 +76,13 @@ let julian_date_of_greenwich (day, month, year) =
   and d = truncate_float (30.6001 *. (float_of_int md +. 1.)) in
   float_of_int b +. c +. d +. day +. 1720994.5
 
-let%test "julian_date_of_greenwich#1" =
-  julian_date_of_greenwich (19.75, 6, 2009) = 2455002.25
-
-let%test "julian_date_of_greenwich#2" =
-  julian_date_of_greenwich (12.625, 7, 2021) = 2459408.125
+let%test "julian_date_of_greenwich" =
+  let dataset =
+    [ ((19.75, 6, 2009), 2455002.25); ((12.625, 7, 2021), 2459408.125) ]
+  in
+  List.fold_left
+    (fun acc (y, d) -> acc && julian_date_of_greenwich y = d)
+    true dataset
 
 let greenwich_date_of_julian julian =
   let julian = julian +. 0.5 in
@@ -105,8 +107,7 @@ let%test "greenwich_date_of_julian" =
   greenwich_date_of_julian 2455002.25 = (19.75, 6, 2009)
 
 let hms_of_decimal_hours hours : hms =
-  let unsigned_decimal = Float.abs hours in
-  let total_seconds = truncate (unsigned_decimal *. 3600.) in
+  let total_seconds = truncate (Float.abs hours *. 3600.) in
   let seconds = total_seconds mod 60 in
   let corrected_seconds = if seconds = 60 then 0 else seconds in
   let corrected_remainder =
@@ -139,3 +140,20 @@ let weekday_of_date date =
   weekday_of_julian_date (julian_date_of_greenwich date)
 
 let%test "weekday_of_date" = weekday_of_date (19., 6, 2009) = 5
+
+let ut_of_lct (day, month, year) hms daylight tzoffset =
+  let lct = decimal_hours_of_hms hms in
+  let ut = lct -. daylight -. tzoffset in
+  let gday = day +. (ut /. 24.) in
+  let jd = julian_date_of_greenwich (gday, month, year) in
+  (* Printf.printf "JD: %f\n" jd; *)
+  let gday, gm, gy = greenwich_date_of_julian jd in
+  (* Printf.printf "Date: %.10f,%d,%d\n" gday gm gy; *)
+  let ut = 24. *. (gday -. truncate_float gday) in
+  (* Printf.printf "ut: %f\n" ut; *)
+  let hours, minutes, seconds = hms_of_decimal_hours ut in
+  (* Printf.printf "HMS: %.0fh%.0fm%.0fs\n" hours minutes seconds; *)
+  ((truncate_float gday, gm, gy), (hours, minutes, seconds))
+
+let%test "ut_of_lct" =
+  ut_of_lct (1., 7, 2013) (3., 37., 0.) 1. 4. = ((30., 6, 2013), (22., 36., 59.))
