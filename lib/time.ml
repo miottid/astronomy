@@ -1,3 +1,7 @@
+type date = float * int * int
+
+type hms = float * float * float
+
 let string_of_month = function
   | 1 -> "January"
   | 2 -> "February"
@@ -11,6 +15,16 @@ let string_of_month = function
   | 10 -> "October"
   | 11 -> "November"
   | 12 -> "December"
+  | _ -> assert false
+
+let string_of_weekday = function
+  | 0 -> "Sunday"
+  | 1 -> "Monday"
+  | 2 -> "Tuesday"
+  | 3 -> "Wednesday"
+  | 4 -> "Thursday"
+  | 5 -> "Friday"
+  | 6 -> "Saturday"
   | _ -> assert false
 
 let date_of_easter year =
@@ -44,7 +58,7 @@ let%test "date_of_easter 2025" = date_of_easter 2025 = (20, 4)
 
 let truncate_float f = float_of_int (truncate f)
 
-let julian_of_greenwich day month year =
+let julian_of_greenwich (day, month, year) =
   let yd = if month < 3 then year - 1 else year
   and md = if month < 3 then month + 12 else month in
   let a = yd / 100 in
@@ -62,10 +76,11 @@ let julian_of_greenwich day month year =
   and d = truncate_float (30.6001 *. (float_of_int md +. 1.)) in
   float_of_int b +. c +. d +. day +. 1720994.5
 
-let%test "julian_of_greenwich#1" = julian_of_greenwich 19.75 6 2009 = 2455002.25
+let%test "julian_of_greenwich#1" =
+  julian_of_greenwich (19.75, 6, 2009) = 2455002.25
 
 let%test "julian_of_greenwich#2" =
-  julian_of_greenwich 12.625 7 2021 = 2459408.125
+  julian_of_greenwich (12.625, 7, 2021) = 2459408.125
 
 let greenwich_of_julian julian =
   let julian = julian +. 0.5 in
@@ -89,7 +104,7 @@ let greenwich_of_julian julian =
 let%test "greenwich_of_julian" =
   greenwich_of_julian 2455002.25 = (19.75, 6, 2009)
 
-let hms_of_decimal hours =
+let hms_of_decimal hours : hms =
   let unsigned_decimal = Float.abs hours in
   let total_seconds = truncate (unsigned_decimal *. 3600.) in
   let seconds = total_seconds mod 60 in
@@ -102,11 +117,13 @@ let hms_of_decimal hours =
   let signed_hours =
     if hours < 0. then -1 * unsigned_hours else unsigned_hours
   in
-  (signed_hours, minutes, corrected_seconds)
+  ( float_of_int signed_hours,
+    float_of_int minutes,
+    float_of_int corrected_seconds )
 
-let%test "hms_of_decimal" = hms_of_decimal 18.52416667 = (18, 31, 27)
+let%test "hms_of_decimal" = hms_of_decimal 18.52416667 = (18., 31., 27.)
 
-let decimal_of_hms hours minutes seconds =
+let decimal_of_hms (hours, minutes, seconds) =
   let a = Float.abs seconds /. 60. in
   let b = (Float.abs minutes +. a) /. 60. in
   let c = Float.abs hours +. b in
