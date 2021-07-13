@@ -113,5 +113,4 @@ let decimal_of_hms hours minutes seconds =
   let decimal =
     if hours < 0. || minutes < 0. || seconds < 0. then -1. *. c else c
   in
-  Printf.printf "Decimal: %.50f\n" decimal;
   decimal
