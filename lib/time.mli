@@ -14,4 +14,4 @@ val hms_of_decimal : float -> int * int * int
 (* [hms_of_decimal hours] converts decimal hours to hours, minutes and seconds. *)
 
 val decimal_of_hms : float -> float -> float -> float
-(* [decimal_of_hms hours minutes seconds] converts hms to decimal hours. *) 
+(* [decimal_of_hms hours minutes seconds] converts hms to decimal hours. *)
