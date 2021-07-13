@@ -110,7 +110,4 @@ let decimal_of_hms hours minutes seconds =
   let a = Float.abs seconds /. 60. in
   let b = (Float.abs minutes +. a) /. 60. in
   let c = Float.abs hours +. b in
-  let decimal =
-    if hours < 0. || minutes < 0. || seconds < 0. then -1. *. c else c
-  in
-  decimal
+  if hours < 0. || minutes < 0. || seconds < 0. then -1. *. c else c
