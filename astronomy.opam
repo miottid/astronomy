@@ -5,9 +5,9 @@ description: "Perform astronomy calculations."
 maintainer: ["David Miotti <david.miotti@gmail.com>"]
 authors: ["David Miotti <david.miotti@gmail.com>"]
 license: "MIT"
-homepage: "https://github.com/miottid/astro"
-doc: "https://github.com/miottid/astro"
-bug-reports: "https://github.com/miottid/astro/issues"
+homepage: "https://github.com/miottid/astronomy"
+doc: "https://github.com/miottid/astronomy"
+bug-reports: "https://github.com/miottid/astronomy/issues"
 depends: [
   "ppx_inline_test" {>= "0.14.1"}
   "ocaml" {>= "4.11.0"}
@@ -28,4 +28,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/miottid/astro.git"
+dev-repo: "git+https://github.com/miottid/astronomy.git"

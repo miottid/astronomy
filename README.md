@@ -1,4 +1,4 @@
-# astro
+# astronomy
 
 OCaml library for astronomy calculations.
 
@@ -24,4 +24,10 @@ dune runtest
 
 ```shell
 dune exec bin/main.exe
+```
+
+**Dev tools:**
+
+```shell
+opam install utop ocamlformat ocaml-lsp-server
 ```

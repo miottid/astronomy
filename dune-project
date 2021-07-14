@@ -1,6 +1,6 @@
 (lang dune 2.8)
 
-(name astro)
+(name astronomy)
 
 (generate_opam_files true)
 
@@ -11,16 +11,16 @@
 (maintainers "David Miotti <david.miotti@gmail.com>")
 
 (source
- (github miottid/astro))
+ (github miottid/astronomy))
 
-(bug_reports "https://github.com/miottid/astro/issues")
+(bug_reports "https://github.com/miottid/astronomy/issues")
 
-(homepage "https://github.com/miottid/astro")
+(homepage "https://github.com/miottid/astronomy")
 
-(documentation "https://github.com/miottid/astro")
+(documentation "https://github.com/miottid/astronomy")
 
 (package
- (name astro)
+ (name astronomy)
  (synopsis "OCaml astronomy library.")
  (description "Perform astronomy calculations.")
  (depends
