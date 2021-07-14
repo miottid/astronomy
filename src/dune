@@ -1,4 +1,4 @@
 (library
- (name lib)
+ (name astro)
   (inline_tests)
   (preprocess (pps ppx_inline_test)))

@@ -1,4 +1,4 @@
-open Lib
+open Astro
 
 let () =
   let julian_date = Time.julian_date_of_greenwich (19.75, 6, 2009) in
