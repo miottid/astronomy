@@ -4,7 +4,7 @@ type hms = float * float * float
 
 let truncate_float f = float_of_int (truncate f)
 
-let check_list f lst =
+let validate_results f lst =
   List.fold_left (fun acc (input, output) -> acc && f input = output) true lst
 
 let string_of_month = function
@@ -48,7 +48,7 @@ let date_of_easter year =
   (day_of_month, month_number)
 
 let%test "date_of_easter" =
-  check_list date_of_easter
+  validate_results date_of_easter
     [
       (2019, (21, 4));
       (2020, (12, 4));
@@ -78,7 +78,7 @@ let julian_date_of_greenwich (day, month, year) =
   float_of_int b +. c +. d +. day +. 1720994.5
 
 let%test "julian_date_of_greenwich" =
-  check_list julian_date_of_greenwich
+  validate_results julian_date_of_greenwich
     [ ((19.75, 6, 2009), 2455002.25); ((12.625, 7, 2021), 2459408.125) ]
 
 let greenwich_date_of_julian julian =
@@ -120,8 +120,8 @@ let hms_of_decimal_hours hours =
     float_of_int minutes,
     float_of_int corrected_seconds )
 
-let%test "julian_date_of_greenwich" =
-  check_list hms_of_decimal_hours
+let%test "hms_of_decimal_hours" =
+  validate_results hms_of_decimal_hours
     [ (18.52416667, (18., 31., 27.)); (22.6167, (22., 37., 0.)) ]
 
 let decimal_hours_of_hms (hours, minutes, seconds) =
@@ -168,3 +168,18 @@ let lct_of_ut (day, month, year) hms daylight tzoffset =
 
 let%test "lct_of_ut" =
   lct_of_ut (30., 6, 2013) (22., 37., 0.) 1. 4. = ((1., 7, 2013), (3., 37., 0.))
+
+let gst_of_ut date hms =
+  let jd = julian_date_of_greenwich date in
+  let s = jd -. 2451545. in
+  let t = s /. 36525. in
+  let t0 = 6.697374558 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
+  let t0 = t0 -. (24. *. truncate_float (t0 /. 24.)) in
+  let ut = decimal_hours_of_hms hms in
+  let a = ut *. 1.002737909 in
+  let gst = t0 +. a in
+  let gst = gst -. (24. *. truncate_float (gst /. 24.)) in
+  let h, m, s = hms_of_decimal_hours gst in
+  (h, m, s)
+
+let%test "gst_of_ut" = gst_of_ut (22., 4, 1980) (14., 36., 51.67) = (4., 40., 5.)
