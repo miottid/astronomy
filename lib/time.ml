@@ -153,3 +153,18 @@ let ut_of_lct (day, month, year) hms daylight tzoffset =
 
 let%test "ut_of_lct" =
   ut_of_lct (1., 7, 2013) (3., 37., 0.) 1. 4. = ((30., 6, 2013), (22., 37., 0.))
+
+let lct_of_ut (day, month, year) hms daylight tzoffset =
+  let ut = decimal_hours_of_hms hms in
+  let zone_time = ut +. tzoffset in
+  let local_time = zone_time +. daylight in
+  let local_jd =
+    julian_date_of_greenwich (day, month, year) +. (local_time /. 24.)
+  in
+  let gday, gmonth, gyear = greenwich_date_of_julian local_jd in
+  let int_day = truncate_float gday in
+  let lct = 24. *. (gday -. int_day) in
+  ((int_day, gmonth, gyear), hms_of_decimal_hours lct)
+
+let%test "lct_of_ut" =
+  lct_of_ut (30., 6, 2013) (22., 37., 0.) 1. 4. = ((1., 7, 2013), (3., 37., 0.))

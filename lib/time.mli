@@ -39,3 +39,7 @@ val weekday_of_date : date -> int
 val ut_of_lct : date -> hms -> float -> float -> date * hms
 (** [ut_of_lct (day, month, year) (hrs, mins, secs) daylight tzoffset]
     Converts Local Civil Time to Universal Time. *)
+
+val lct_of_ut : date -> hms -> float -> float -> date * hms
+(** [lct_of_ut (day, month, year) (hrs, mins, secs) daylight tzoffset]
+    Converts Universal Time to Local Civil Time. *)
