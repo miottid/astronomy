@@ -1,13 +1,9 @@
 (lang dune 2.8)
-
 (name astronomy)
 
 (generate_opam_files true)
-
 (license MIT)
-
 (authors "David Miotti <david.miotti@gmail.com>")
-
 (maintainers "David Miotti <david.miotti@gmail.com>")
 
 (source

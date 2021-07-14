@@ -23,11 +23,17 @@ dune runtest
 **Run playground:**
 
 ```shell
-dune exec bin/main.exe
+dune exec examples/main.exe
 ```
 
 **Dev tools:**
 
 ```shell
-opam install utop ocamlformat ocaml-lsp-server
+opam install utop ocamlformat ocaml-lsp-server odoc
+```
+
+**Generate documentation:**
+
+```shell
+dune build @doc
 ```
