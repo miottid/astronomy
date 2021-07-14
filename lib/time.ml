@@ -2,6 +2,11 @@ type date = float * int * int
 
 type hms = float * float * float
 
+let truncate_float f = float_of_int (truncate f)
+
+let check_list f lst =
+  List.fold_left (fun acc (input, output) -> acc && f input = output) true lst
+
 let string_of_month = function
   | 1 -> "January"
   | 2 -> "February"
@@ -43,7 +48,7 @@ let date_of_easter year =
   (day_of_month, month_number)
 
 let%test "date_of_easter" =
-  let dataset =
+  check_list date_of_easter
     [
       (2019, (21, 4));
       (2020, (12, 4));
@@ -53,10 +58,6 @@ let%test "date_of_easter" =
       (2024, (31, 3));
       (2025, (20, 4));
     ]
-  in
-  List.fold_left (fun acc (y, d) -> acc && date_of_easter y = d) true dataset
-
-let truncate_float f = float_of_int (truncate f)
 
 let julian_date_of_greenwich (day, month, year) =
   let yd = if month < 3 then year - 1 else year
@@ -77,12 +78,8 @@ let julian_date_of_greenwich (day, month, year) =
   float_of_int b +. c +. d +. day +. 1720994.5
 
 let%test "julian_date_of_greenwich" =
-  let dataset =
+  check_list julian_date_of_greenwich
     [ ((19.75, 6, 2009), 2455002.25); ((12.625, 7, 2021), 2459408.125) ]
-  in
-  List.fold_left
-    (fun acc (y, d) -> acc && julian_date_of_greenwich y = d)
-    true dataset
 
 let greenwich_date_of_julian julian =
   let julian = julian +. 0.5 in
@@ -106,8 +103,9 @@ let greenwich_date_of_julian julian =
 let%test "greenwich_date_of_julian" =
   greenwich_date_of_julian 2455002.25 = (19.75, 6, 2009)
 
-let hms_of_decimal_hours hours : hms =
-  let total_seconds = truncate (Float.abs hours *. 3600.) in
+let hms_of_decimal_hours hours =
+  let rounded_hours = Float.round (hours *. 10_000_000.) /. 10_000_000. in
+  let total_seconds = truncate (Float.abs rounded_hours *. 3600.) in
   let seconds = total_seconds mod 60 in
   let corrected_seconds = if seconds = 60 then 0 else seconds in
   let corrected_remainder =
@@ -122,7 +120,9 @@ let hms_of_decimal_hours hours : hms =
     float_of_int minutes,
     float_of_int corrected_seconds )
 
-let%test "hms_of_decimal" = hms_of_decimal_hours 18.52416667 = (18., 31., 27.)
+let%test "julian_date_of_greenwich" =
+  check_list hms_of_decimal_hours
+    [ (18.52416667, (18., 31., 27.)); (22.6167, (22., 37., 0.)) ]
 
 let decimal_hours_of_hms (hours, minutes, seconds) =
   let a = Float.abs seconds /. 60. in
@@ -146,14 +146,10 @@ let ut_of_lct (day, month, year) hms daylight tzoffset =
   let ut = lct -. daylight -. tzoffset in
   let gday = day +. (ut /. 24.) in
   let jd = julian_date_of_greenwich (gday, month, year) in
-  (* Printf.printf "JD: %f\n" jd; *)
   let gday, gm, gy = greenwich_date_of_julian jd in
-  (* Printf.printf "Date: %.10f,%d,%d\n" gday gm gy; *)
   let ut = 24. *. (gday -. truncate_float gday) in
-  (* Printf.printf "ut: %f\n" ut; *)
   let hours, minutes, seconds = hms_of_decimal_hours ut in
-  (* Printf.printf "HMS: %.0fh%.0fm%.0fs\n" hours minutes seconds; *)
   ((truncate_float gday, gm, gy), (hours, minutes, seconds))
 
 let%test "ut_of_lct" =
-  ut_of_lct (1., 7, 2013) (3., 37., 0.) 1. 4. = ((30., 6, 2013), (22., 36., 59.))
+  ut_of_lct (1., 7, 2013) (3., 37., 0.) 1. 4. = ((30., 6, 2013), (22., 37., 0.))
