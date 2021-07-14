@@ -120,7 +120,7 @@ let hms_of_decimal_hours hours =
     float_of_int minutes,
     float_of_int corrected_seconds )
 
-let%test "julian_date_of_greenwich" =
+let%test "hms_of_decimal_hours" =
   validate_results hms_of_decimal_hours
     [ (18.52416667, (18., 31., 27.)); (22.6167, (22., 37., 0.)) ]
 
