@@ -46,3 +46,6 @@ val lct_of_ut : date -> hms -> float -> float -> date * hms
 
 val gst_of_ut : date -> hms -> hms
 (** [gst_of_ut date hms] Converts Universal time to Greenwich Sideral Time. *)
+
+val ut_of_gst : date -> hms -> hms
+(** [ut_of_gst date hms] Converts Greenwich Sideral Time to Universal Time. *)

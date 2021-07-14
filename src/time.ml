@@ -183,3 +183,17 @@ let gst_of_ut date hms =
   (h, m, s)
 
 let%test "gst_of_ut" = gst_of_ut (22., 4, 1980) (14., 36., 51.67) = (4., 40., 5.)
+
+let ut_of_gst date hms =
+  let jd = julian_date_of_greenwich date in
+  let s = jd -. 2451545. in
+  let t = s /. 36525. in
+  let t0 = 6.69737 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
+  let t0 = t0 -. (24. *. truncate_float (t0 /. 24.)) in
+  let gsthrs = decimal_hours_of_hms hms in
+  let a = gsthrs -. t0 in
+  let b = a -. (24. *. truncate_float (a /. 24.)) in
+  let ut = b *. 0.9972695663 in
+  hms_of_decimal_hours ut
+
+let%test "ut_of_gst" = ut_of_gst (22., 4, 1980) (4., 40., 5.) = (14., 36., 51.)
