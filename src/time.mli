@@ -43,3 +43,6 @@ val ut_of_lct : date -> hms -> float -> float -> date * hms
 val lct_of_ut : date -> hms -> float -> float -> date * hms
 (** [lct_of_ut (day, month, year) (hrs, mins, secs) daylight tzoffset]
     Converts Universal Time to Local Civil Time. *)
+
+val gst_of_ut : date -> hms -> hms
+(** [gst_of_ut date hms] Converts Universal time to Greenwich Sideral Time. *)
