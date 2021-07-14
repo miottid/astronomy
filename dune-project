@@ -4,14 +4,14 @@
 
 (generate_opam_files true)
 
-(license ISC)
+(license MIT)
 
 (authors "David Miotti <david.miotti@gmail.com>")
 
 (maintainers "David Miotti <david.miotti@gmail.com>")
 
 (source
- (github miottid/astrol))
+ (github miottid/astro))
 
 (bug_reports "https://github.com/miottid/astro/issues")
 
@@ -21,8 +21,8 @@
 
 (package
  (name astro)
- (synopsis "An astronomy calculation library.")
- (description "All you need for astronomy calculations.")
+ (synopsis "OCaml astronomy library.")
+ (description "Perform astronomy calculations.")
  (depends
   (ppx_inline_test (>= 0.14.1))
   (ocaml
