@@ -1,8 +1,15 @@
-type date = float * int * int
-(** date represent a date with day, month and year. *)
+(** Perform date and time calculations *)
 
-type hms = float * float * float
-(** hms is a tuple of hours, minutes and seconds. *)
+type date = { day: float; month: int; year: int }
+(** [date] represent a particular day with time included in [day]. *)
+
+type time = { hours: float; minutes: float; seconds: float }
+(** [time] is represent the time in a day hours, minutes and seconds. *)
+
+type datetime = { date: date; time: time }
+(** [datetime] is a date with time *)
+
+type datetime_tz = { tzoffset: float; daylight: float; datetime: datetime }
 
 val string_of_month : int -> string
 (** [string_of_month a] returns the month name.
@@ -12,40 +19,38 @@ val string_of_weekday : int -> string
 (** [string_of_weekday weekday] returns the day of the week.
     0 is Sunday. *)
 
-val date_of_easter : int -> int * int
-(** [date_of_easter a] returns the date of Easter (day * month). *)
+val easter_day : int -> date
+(** [easter_day a] returns the date of Easter in the provided [year]. *)
 
-val julian_date_of_greenwich : date -> float
-(** [julian_date_of_greenwich day month year] returns the Julian date. *)
+val julian_of_greenwich : date -> float
+(** [julian_of_greenwich day month year] returns the Julian date. *)
 
-val greenwich_date_of_julian : float -> date
-(** [greenwich_date_of_julian julian] converts a julian date into greenwih. *)
+val greenwich_of_julian : float -> date
+(** [greenwich_of_julian julian] converts a Julian date into a greenwich date. *)
 
-val hms_of_decimal_hours : float -> hms
-(** [hms_of_decimal_hours hours] converts decimal hours to 
+val time_of_hours : float -> time
+(** [time_of_hours hours] converts decimal hours to 
     hours, minutes and seconds. *)
 
-val decimal_hours_of_hms : hms -> float
-(** [decimal_of_hms hours minutes seconds] converts hms to decimal hours. *)
+val hours_of_time : time -> float
+(** [hours_of_time hours minutes seconds] converts time to decimal hours. *)
 
-val weekday_of_julian_date : float -> int
-(** [weekday_of_julian_date jd] returns the weekday number at Greenwich.
-    With Sunday = 0. *)
+val weekday_of_julian : float -> int
+(** [weekday_of_julian jd] returns the weekday number at Greenwich.
+    With 'Sunday' = 0. *)
 
 val weekday_of_date : date -> int
 (** [weekday_of_date date] returns the weekday number at Greenwich.
-    Sunday = 0. *)
+    With 'Sunday' = 0. *)
 
-val ut_of_lct : date -> hms -> float -> float -> date * hms
-(** [ut_of_lct (day, month, year) (hrs, mins, secs) daylight tzoffset]
-    Converts Local Civil Time to Universal Time. *)
+val ut_of_lct : datetime_tz -> datetime
+(** [ut_of_lct datetime_tz] converts Local Civil Time to Universal Time. *)
 
-val lct_of_ut : date -> hms -> float -> float -> date * hms
-(** [lct_of_ut (day, month, year) (hrs, mins, secs) daylight tzoffset]
-    Converts Universal Time to Local Civil Time. *)
+val lct_of_ut : datetime_tz -> datetime
+(** [lct_of_ut datetime_tz] converts Universal Time to Local Civil Time. *)
 
-val gst_of_ut : date -> hms -> hms
-(** [gst_of_ut date hms] Converts Universal time to Greenwich Sideral Time. *)
+val gst_of_ut : datetime -> time
+(** [gst_of_ut (date, time)] converts Universal time to Greenwich Sideral Time. *)
 
-val ut_of_gst : date -> hms -> hms
-(** [ut_of_gst date hms] Converts Greenwich Sideral Time to Universal Time. *)
+val ut_of_gst : datetime -> time
+(** [ut_of_gst (date, time)] converts Greenwich Sideral Time to Universal Time. *)

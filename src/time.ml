@@ -1,8 +1,12 @@
-type date = float * int * int
+type date = { day : float; month : int; year : int }
 
-type hms = float * float * float
+type time = { hours : float; minutes : float; seconds : float }
 
-let truncate_float f = float_of_int (truncate f)
+type datetime = { date : date; time : time }
+
+type datetime_tz = { tzoffset : float; daylight : float; datetime : datetime }
+
+let truncate_float f = float (truncate f)
 
 let validate_results f lst =
   List.fold_left (fun acc (input, output) -> acc && f input = output) true lst
@@ -32,7 +36,7 @@ let string_of_weekday = function
   | 6 -> "Saturday"
   | _ -> assert false
 
-let date_of_easter year =
+let easter_day year =
   let a = year mod 19 and b = year / 100 and c = year mod 100 in
   let d = b / 4
   and e = b mod 4
@@ -45,43 +49,46 @@ let date_of_easter year =
   let m = (a + (11 * h) + (22 * l)) / 451 in
   let month_number = (h + l - (7 * m) + 114) / 31
   and day_of_month = ((h + l - (7 * m) + 114) mod 31) + 1 in
-  (day_of_month, month_number)
+  { day = float day_of_month; month = month_number; year }
 
-let%test "date_of_easter" =
-  validate_results date_of_easter
+let%test "easter_day" =
+  validate_results easter_day
     [
-      (2019, (21, 4));
-      (2020, (12, 4));
-      (2021, (4, 4));
-      (2022, (17, 4));
-      (2023, (9, 4));
-      (2024, (31, 3));
-      (2025, (20, 4));
+      (2019, { day = 21.; month = 4; year = 2019 });
+      (2020, { day = 12.; month = 4; year = 2020 });
+      (2021, { day = 4.; month = 4; year = 2021 });
+      (2022, { day = 17.; month = 4; year = 2022 });
+      (2023, { day = 9.; month = 4; year = 2023 });
+      (2024, { day = 31.; month = 3; year = 2024 });
+      (2025, { day = 20.; month = 4; year = 2025 });
     ]
 
-let julian_date_of_greenwich (day, month, year) =
-  let yd = if month < 3 then year - 1 else year
-  and md = if month < 3 then month + 12 else month in
+let julian_of_greenwich date =
+  let yd = if date.month < 3 then date.year - 1 else date.year
+  and md = if date.month < 3 then date.month + 12 else date.month in
   let a = yd / 100 in
   let b =
     if
       yd > 1582
-      || (yd = 1582 && month > 10)
-      || (yd = 1582 && month = 10 && day > 15.)
+      || (yd = 1582 && date.month > 10)
+      || (yd = 1582 && date.month = 10 && date.day > 15.)
     then 2 - a + (a / 4)
     else 0
   in
   let c =
-    if yd < 0 then truncate_float ((365.25 *. float_of_int yd) -. 0.75)
-    else truncate_float (365.25 *. float_of_int yd)
-  and d = truncate_float (30.6001 *. (float_of_int md +. 1.)) in
-  float_of_int b +. c +. d +. day +. 1720994.5
+    if yd < 0 then truncate_float ((365.25 *. float yd) -. 0.75)
+    else truncate_float (365.25 *. float yd)
+  and d = truncate_float (30.6001 *. (float md +. 1.)) in
+  float b +. c +. d +. date.day +. 1720994.5
 
-let%test "julian_date_of_greenwich" =
-  validate_results julian_date_of_greenwich
-    [ ((19.75, 6, 2009), 2455002.25); ((12.625, 7, 2021), 2459408.125) ]
+let%test "julian_of_greenwich" =
+  validate_results julian_of_greenwich
+    [
+      ({ day = 19.75; month = 6; year = 2009 }, 2455002.25);
+      ({ day = 12.625; month = 7; year = 2021 }, 2459408.125);
+    ]
 
-let greenwich_date_of_julian julian =
+let greenwich_of_julian julian =
   let julian = julian +. 0.5 in
   let i = truncate_float julian in
   let f = julian -. i in
@@ -95,105 +102,170 @@ let greenwich_date_of_julian julian =
   let d = truncate_float ((c -. 122.1) /. 365.25) in
   let e = truncate_float (365.25 *. d) in
   let g = truncate_float ((c -. e) /. 30.6001) in
-  let day = c -. e +. f -. float_of_int (truncate (30.6001 *. g)) in
+  let day = c -. e +. f -. float (truncate (30.6001 *. g)) in
   let month = if g < 13.5 then g -. 1. else g -. 13. in
   let year = if month > 2.5 then d -. 4716. else d -. 4715. in
-  (day, truncate month, truncate year)
+  { day; month = truncate month; year = int_of_float year }
 
-let%test "greenwich_date_of_julian" =
-  greenwich_date_of_julian 2455002.25 = (19.75, 6, 2009)
+let%test "greenwich_of_julian" =
+  greenwich_of_julian 2455002.25 = { day = 19.75; month = 6; year = 2009 }
 
-let hms_of_decimal_hours hours =
-  let rounded_hours = Float.round (hours *. 10_000_000.) /. 10_000_000. in
-  let total_seconds = truncate (Float.abs rounded_hours *. 3600.) in
-  let seconds = total_seconds mod 60 in
-  let corrected_seconds = if seconds = 60 then 0 else seconds in
+let time_of_hours hours =
+  let total_seconds = Float.abs hours *. 3600. in
+  let seconds = mod_float total_seconds 60. in
+  let corrected_seconds = if seconds = 60. then 0. else seconds in
   let corrected_remainder =
-    if seconds = 60 then total_seconds + 60 else total_seconds
+    if seconds = 60. then total_seconds +. 60. else total_seconds
   in
-  let minutes = corrected_remainder / 60 mod 60 in
-  let unsigned_hours = corrected_remainder / 3600 in
+  let minutes = mod_float (corrected_remainder /. 60.) 60. in
+  let unsigned_hours = int_of_float corrected_remainder / 3600 in
   let signed_hours =
     if hours < 0. then -1 * unsigned_hours else unsigned_hours
   in
-  ( float_of_int signed_hours,
-    float_of_int minutes,
-    float_of_int corrected_seconds )
+  { hours = float signed_hours; minutes; seconds = corrected_seconds }
 
-let%test "hms_of_decimal_hours" =
-  validate_results hms_of_decimal_hours
-    [ (18.52416667, (18., 31., 27.)); (22.6167, (22., 37., 0.)) ]
+let%test "time_of_hours" =
+  validate_results time_of_hours
+    [
+      (18.5, { hours = 18.; minutes = 30.; seconds = 0. });
+      (22.5, { hours = 22.; minutes = 30.; seconds = 0. });
+    ]
 
-let decimal_hours_of_hms (hours, minutes, seconds) =
-  let a = Float.abs seconds /. 60. in
-  let b = (Float.abs minutes +. a) /. 60. in
-  let c = Float.abs hours +. b in
-  if hours < 0. || minutes < 0. || seconds < 0. then -1. *. c else c
+let hours_of_time time =
+  let a = Float.abs time.seconds /. 60. in
+  let b = (Float.abs time.minutes +. a) /. 60. in
+  let c = Float.abs time.hours +. b in
+  if time.hours < 0. || time.minutes < 0. || time.seconds < 0. then -1. *. c
+  else c
 
-let weekday_of_julian_date julian =
+let%test "hours_of_time" =
+  validate_results hours_of_time
+    [ ({ hours = 18.; minutes = 30.; seconds = 0. }, 18.5) ]
+
+let weekday_of_julian julian =
   let jd = truncate_float (julian -. 0.5) +. 0.5 in
   truncate (jd +. 1.5) mod 7
 
-let%test "weekday_of_julian_date" = weekday_of_julian_date 2455001.5 = 5
+let%test "weekday_of_julian" = weekday_of_julian 2455001.5 = 5
 
-let weekday_of_date date =
-  weekday_of_julian_date (julian_date_of_greenwich date)
+let weekday_of_date date = weekday_of_julian (julian_of_greenwich date)
 
-let%test "weekday_of_date" = weekday_of_date (19., 6, 2009) = 5
+let%test "weekday_of_date" =
+  weekday_of_date { day = 19.; month = 6; year = 2009 } = 5
 
-let ut_of_lct (day, month, year) hms daylight tzoffset =
-  let lct = decimal_hours_of_hms hms in
-  let ut = lct -. daylight -. tzoffset in
-  let gday = day +. (ut /. 24.) in
-  let jd = julian_date_of_greenwich (gday, month, year) in
-  let gday, gm, gy = greenwich_date_of_julian jd in
-  let ut = 24. *. (gday -. truncate_float gday) in
-  let hours, minutes, seconds = hms_of_decimal_hours ut in
-  ((truncate_float gday, gm, gy), (hours, minutes, seconds))
+let ut_of_lct datetime_tz =
+  let lct = hours_of_time datetime_tz.datetime.time in
+  let ut = lct -. datetime_tz.daylight -. datetime_tz.tzoffset in
+  let gday = datetime_tz.datetime.date.day +. (ut /. 24.) in
+  let gdate =
+    {
+      day = gday;
+      month = datetime_tz.datetime.date.month;
+      year = datetime_tz.datetime.date.year;
+    }
+  in
+  let jd = julian_of_greenwich gdate in
+  let gdate = greenwich_of_julian jd in
+  let ut = 24. *. (gdate.day -. truncate_float gday) in
+  let time = time_of_hours ut in
+  {
+    date = { day = truncate_float gday; month = gdate.month; year = gdate.year };
+    time;
+  }
 
 let%test "ut_of_lct" =
-  ut_of_lct (1., 7, 2013) (3., 37., 0.) 1. 4. = ((30., 6, 2013), (22., 37., 0.))
+  ut_of_lct
+    {
+      datetime =
+        {
+          date = { day = 1.; month = 7; year = 2013 };
+          time = { hours = 3.; minutes = 37.; seconds = 0. };
+        };
+      tzoffset = 4.;
+      daylight = 1.;
+    }
+  = {
+      date = { day = 30.; month = 6; year = 2013 };
+      time = { hours = 22.; minutes = 37.; seconds = 0. };
+    }
 
-let lct_of_ut (day, month, year) hms daylight tzoffset =
-  let ut = decimal_hours_of_hms hms in
-  let zone_time = ut +. tzoffset in
-  let local_time = zone_time +. daylight in
+let lct_of_ut datetime_tz =
+  let ut = hours_of_time datetime_tz.datetime.time in
+  let zone_time = ut +. datetime_tz.tzoffset in
+  let local_time = zone_time +. datetime_tz.daylight in
   let local_jd =
-    julian_date_of_greenwich (day, month, year) +. (local_time /. 24.)
+    julian_of_greenwich datetime_tz.datetime.date +. (local_time /. 24.)
   in
-  let gday, gmonth, gyear = greenwich_date_of_julian local_jd in
-  let int_day = truncate_float gday in
-  let lct = 24. *. (gday -. int_day) in
-  ((int_day, gmonth, gyear), hms_of_decimal_hours lct)
+  let gdate = greenwich_of_julian local_jd in
+  let int_day = truncate_float gdate.day in
+  let lct = 24. *. (gdate.day -. int_day) in
+  {
+    date = { day = int_day; month = gdate.month; year = gdate.year };
+    time = time_of_hours lct;
+  }
 
 let%test "lct_of_ut" =
-  lct_of_ut (30., 6, 2013) (22., 37., 0.) 1. 4. = ((1., 7, 2013), (3., 37., 0.))
+  lct_of_ut
+    {
+      datetime =
+        {
+          date = { day = 30.; month = 6; year = 2013 };
+          time = { hours = 22.; minutes = 37.; seconds = 0. };
+        };
+      tzoffset = 4.;
+      daylight = 1.;
+    }
+  = {
+      date = { day = 1.; month = 7; year = 2013 };
+      time = { hours = 3.; minutes = 37.; seconds = 0. };
+    }
 
-let gst_of_ut date hms =
-  let jd = julian_date_of_greenwich date in
+let gst_of_ut datetime =
+  let jd = julian_of_greenwich datetime.date in
   let s = jd -. 2451545. in
   let t = s /. 36525. in
   let t0 = 6.697374558 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
   let t0 = t0 -. (24. *. truncate_float (t0 /. 24.)) in
-  let ut = decimal_hours_of_hms hms in
+  let ut = hours_of_time datetime.time in
   let a = ut *. 1.002737909 in
   let gst = t0 +. a in
   let gst = gst -. (24. *. truncate_float (gst /. 24.)) in
-  let h, m, s = hms_of_decimal_hours gst in
-  (h, m, s)
+  time_of_hours gst
 
-let%test "gst_of_ut" = gst_of_ut (22., 4, 1980) (14., 36., 51.67) = (4., 40., 5.)
+let%test "gst_of_ut" =
+  gst_of_ut
+    {
+      date = { day = 22.; month = 5; year = 1980 };
+      time = { hours = 14.; minutes = 36.; seconds = 51.67 };
+    }
+  = { hours = 4.; minutes = 40.; seconds = 5. }
 
-let ut_of_gst date hms =
-  let jd = julian_date_of_greenwich date in
+let ut_of_gst datetime =
+  Printf.printf "\n-- ut_of_gst\n";
+  let jd = julian_of_greenwich datetime.date in
+  Printf.printf "jd: %.9f\n" jd;
   let s = jd -. 2451545. in
+  Printf.printf "s: %f.9\n" s;
   let t = s /. 36525. in
-  let t0 = 6.69737 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
+  Printf.printf "t: %.9f\n" t;
+  let t0 = 6.697374558 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
+  Printf.printf "t0: %.9f\n" t0;
   let t0 = t0 -. (24. *. truncate_float (t0 /. 24.)) in
-  let gsthrs = decimal_hours_of_hms hms in
+  Printf.printf "t0: %.9f\n" t0;
+  let gsthrs = hours_of_time datetime.time in
+  Printf.printf "gsthrs: %.9f\n" gsthrs;
   let a = gsthrs -. t0 in
+  (* Printf.printf "a: %.9f\n" a; *)
   let b = a -. (24. *. truncate_float (a /. 24.)) in
+  (* Printf.printf "b: %.9f\n" b; *)
   let ut = b *. 0.9972695663 in
-  hms_of_decimal_hours ut
+  (* Printf.printf "ut: %.9f\n" ut; *)
+  time_of_hours ut
 
-let%test "ut_of_gst" = ut_of_gst (22., 4, 1980) (4., 40., 5.) = (14., 36., 51.)
+let%test "ut_of_gst" =
+  ut_of_gst
+    {
+      date = { day = 22.; month = 4; year = 1980 };
+      time = { hours = 4.; minutes = 30.; seconds = 0. };
+    }
+  = { hours = 14.; minutes = 36.; seconds = 51. }
