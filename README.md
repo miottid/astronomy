@@ -29,7 +29,7 @@ dune exec examples/main.exe
 **Dev tools:**
 
 ```shell
-opam install utop ocamlformat ocaml-lsp-server odoc
+opam install utop ocamlformat ocaml-lsp-server merlin ocp-indent
 ```
 
 **Generate documentation:**
