@@ -8,9 +8,6 @@ type datetime_tz = { tzoffset : float; daylight : float; datetime : datetime }
 
 let truncate_float f = float (truncate f)
 
-let validate_results f lst =
-  List.fold_left (fun acc (input, output) -> acc && f input = output) true lst
-
 let string_of_month = function
   | 1 -> "January"
   | 2 -> "February"
@@ -108,10 +105,6 @@ let hours_of_time time =
   let c = Float.abs time.hours +. b in
   if time.hours < 0. || time.minutes < 0. || time.seconds < 0. then -1. *. c
   else c
-
-let%test "hours_of_time" =
-  validate_results hours_of_time
-    [ ({ hours = 18.; minutes = 30.; seconds = 0. }, 18.5) ]
 
 let weekday_of_julian julian =
   let jd = truncate_float (julian -. 0.5) +. 0.5 in
