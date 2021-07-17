@@ -7,9 +7,10 @@ type time = { hours: float; minutes: float; seconds: float }
 (** [time] is represent the time in a day hours, minutes and seconds. *)
 
 type datetime = { date: date; time: time }
-(** [datetime] is a date with time *)
+(** [datetime] is a date with time. *)
 
 type datetime_tz = { tzoffset: float; daylight: float; datetime: datetime }
+(** [datetime_tz] is a date with time, daylight saving and time zone. *)
 
 val string_of_month : int -> string
 (** [string_of_month a] returns the month name.
