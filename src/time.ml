@@ -110,8 +110,6 @@ let weekday_of_julian julian =
   let jd = truncate_float (julian -. 0.5) +. 0.5 in
   truncate (jd +. 1.5) mod 7
 
-let%test "weekday_of_julian" = weekday_of_julian 2455001.5 = 5
-
 let weekday_of_date date = weekday_of_julian (julian_of_greenwich date)
 
 let%test "weekday_of_date" =
