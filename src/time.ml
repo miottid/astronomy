@@ -86,18 +86,23 @@ let greenwich_of_julian julian =
   { day; month = truncate month; year = int_of_float year }
 
 let time_of_hours hours =
-  let total_seconds = Float.abs hours *. 3600. in
-  let seconds = mod_float total_seconds 60. in
-  let corrected_seconds = if seconds = 60. then 0. else seconds in
+  let rounded_hours = Float.round (hours *. 10_000_000.) /. 10_000_000. in
+  let total_seconds = truncate (Float.abs rounded_hours *. 3600.) in
+  let seconds = total_seconds mod 60 in
+  let corrected_seconds = if seconds = 60 then 0 else seconds in
   let corrected_remainder =
-    if seconds = 60. then total_seconds +. 60. else total_seconds
+    if seconds = 60 then total_seconds + 60 else total_seconds
   in
-  let minutes = mod_float (corrected_remainder /. 60.) 60. in
-  let unsigned_hours = int_of_float corrected_remainder / 3600 in
+  let minutes = corrected_remainder / 60 mod 60 in
+  let unsigned_hours = corrected_remainder / 3600 in
   let signed_hours =
     if hours < 0. then -1 * unsigned_hours else unsigned_hours
   in
-  { hours = float signed_hours; minutes; seconds = corrected_seconds }
+  {
+    hours = float signed_hours;
+    minutes = float minutes;
+    seconds = float corrected_seconds;
+  }
 
 let hours_of_time time =
   let a = Float.abs time.seconds /. 60. in
@@ -125,28 +130,13 @@ let ut_of_lct datetime_tz =
   in
   let jd = julian_of_greenwich gdate in
   let gdate = greenwich_of_julian jd in
-  let ut = 24. *. (gdate.day -. truncate_float gday) in
+  let ut = 24. *. (gdate.day -. truncate_float gdate.day) in
   let time = time_of_hours ut in
   {
-    date = { day = truncate_float gday; month = gdate.month; year = gdate.year };
+    date =
+      { day = truncate_float gdate.day; month = gdate.month; year = gdate.year };
     time;
   }
-
-let%test "ut_of_lct" =
-  ut_of_lct
-    {
-      datetime =
-        {
-          date = { day = 1.; month = 7; year = 2013 };
-          time = { hours = 3.; minutes = 37.; seconds = 0. };
-        };
-      tzoffset = 4.;
-      daylight = 1.;
-    }
-  = {
-      date = { day = 30.; month = 6; year = 2013 };
-      time = { hours = 22.; minutes = 37.; seconds = 0. };
-    }
 
 let lct_of_ut datetime_tz =
   let ut = hours_of_time datetime_tz.datetime.time in
