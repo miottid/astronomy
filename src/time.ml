@@ -51,18 +51,6 @@ let easter_day year =
   and day_of_month = ((h + l - (7 * m) + 114) mod 31) + 1 in
   { day = float day_of_month; month = month_number; year }
 
-let%test "easter_day" =
-  validate_results easter_day
-    [
-      (2019, { day = 21.; month = 4; year = 2019 });
-      (2020, { day = 12.; month = 4; year = 2020 });
-      (2021, { day = 4.; month = 4; year = 2021 });
-      (2022, { day = 17.; month = 4; year = 2022 });
-      (2023, { day = 9.; month = 4; year = 2023 });
-      (2024, { day = 31.; month = 3; year = 2024 });
-      (2025, { day = 20.; month = 4; year = 2025 });
-    ]
-
 let julian_of_greenwich date =
   let yd = if date.month < 3 then date.year - 1 else date.year
   and md = if date.month < 3 then date.month + 12 else date.month in
@@ -80,13 +68,6 @@ let julian_of_greenwich date =
     else truncate_float (365.25 *. float yd)
   and d = truncate_float (30.6001 *. (float md +. 1.)) in
   float b +. c +. d +. date.day +. 1720994.5
-
-let%test "julian_of_greenwich" =
-  validate_results julian_of_greenwich
-    [
-      ({ day = 19.75; month = 6; year = 2009 }, 2455002.25);
-      ({ day = 12.625; month = 7; year = 2021 }, 2459408.125);
-    ]
 
 let greenwich_of_julian julian =
   let julian = julian +. 0.5 in
@@ -107,9 +88,6 @@ let greenwich_of_julian julian =
   let year = if month > 2.5 then d -. 4716. else d -. 4715. in
   { day; month = truncate month; year = int_of_float year }
 
-let%test "greenwich_of_julian" =
-  greenwich_of_julian 2455002.25 = { day = 19.75; month = 6; year = 2009 }
-
 let time_of_hours hours =
   let total_seconds = Float.abs hours *. 3600. in
   let seconds = mod_float total_seconds 60. in
@@ -123,13 +101,6 @@ let time_of_hours hours =
     if hours < 0. then -1 * unsigned_hours else unsigned_hours
   in
   { hours = float signed_hours; minutes; seconds = corrected_seconds }
-
-let%test "time_of_hours" =
-  validate_results time_of_hours
-    [
-      (18.5, { hours = 18.; minutes = 30.; seconds = 0. });
-      (22.5, { hours = 22.; minutes = 30.; seconds = 0. });
-    ]
 
 let hours_of_time time =
   let a = Float.abs time.seconds /. 60. in

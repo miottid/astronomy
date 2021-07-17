@@ -17,7 +17,7 @@ opam install .
 **Run tests:**
 
 ```shell
-dune runtest
+dune build @test/runtest
 ```
 
 **Run playground:**
