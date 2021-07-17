@@ -41,6 +41,9 @@ module Time_test = struct
       [ ({ hours = 18.; minutes = 30.; seconds = 0. }, 18.5) ]
 
   let weekday_of_julian () = Time.weekday_of_julian 2455001.5 = 5
+
+  let weekday_of_date () =
+    Time.weekday_of_date { day = 19.; month = 6; year = 2009 } = 5
 end
 
 let easter_day () =
@@ -67,6 +70,9 @@ let weekday_of_julian () =
     "weekday_of_julian" true
     (Time_test.weekday_of_julian ())
 
+let weekday_of_date () =
+  Alcotest.(check bool) "weekday_of_date" true (Time_test.weekday_of_date ())
+
 let test_set =
   [
     ("easter_day", `Quick, easter_day);
@@ -75,4 +81,5 @@ let test_set =
     ("time_of_hours", `Quick, time_of_hours);
     ("hours_of_time", `Quick, hours_of_time);
     ("weekday_of_julian", `Quick, weekday_of_julian);
+    ("weekday_of_date", `Quick, weekday_of_date);
   ]

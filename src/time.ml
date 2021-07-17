@@ -112,9 +112,6 @@ let weekday_of_julian julian =
 
 let weekday_of_date date = weekday_of_julian (julian_of_greenwich date)
 
-let%test "weekday_of_date" =
-  weekday_of_date { day = 19.; month = 6; year = 2009 } = 5
-
 let ut_of_lct datetime_tz =
   let lct = hours_of_time datetime_tz.datetime.time in
   let ut = lct -. datetime_tz.daylight -. datetime_tz.tzoffset in
