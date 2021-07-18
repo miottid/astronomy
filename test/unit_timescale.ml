@@ -66,20 +66,17 @@ module Time_test = struct
     Timescale.weekday_of_date { day = 19.; month = 6; year = 2009 } = 5
 
   let ut_of_lct () =
-    let ut =
-      Timescale.ut_of_lct
-        {
-          datetime =
-            {
-              date = { day = 1.; month = 7; year = 2013 };
-              time = { hours = 3.; minutes = 37.; seconds = 0. };
-            };
-          tzoffset = 4.;
-          daylight = 1.;
-        }
-    in
-    approx_datetime_equal ut
+    Timescale.ut_of_lct
       {
+        datetime =
+          {
+            date = { day = 1.; month = 7; year = 2013 };
+            time = { hours = 3.; minutes = 37.; seconds = 0. };
+          };
+        tzoffset = 4.;
+        daylight = 1.;
+      }
+    = {
         date = { day = 30.; month = 6; year = 2013 };
         time = { hours = 22.; minutes = 37.; seconds = 0. };
       }

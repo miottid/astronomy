@@ -3,15 +3,15 @@ type dms = { degrees : float; minutes : float; seconds : float }
 let pp_dms dms =
   Printf.sprintf "%fº %fm %fs" dms.degrees dms.minutes dms.seconds
 
-let degrees_of_dms dms =
+let deg_of_dms dms =
   let a = Float.abs dms.seconds /. 60. in
   let b = (Float.abs dms.minutes +. a) /. 60. in
   let c = Float.abs dms.degrees +. b in
   if dms.seconds < 0. || dms.minutes < 0. || dms.seconds < 0. then -1. *. c
   else c
 
-let dms_of_degrees degrees =
-  let udec = Float.abs degrees in
+let dms_of_deg deg =
+  let udec = Float.abs deg in
   let total_seconds = udec *. 3600. in
   let seconds = Float.round (mod_float total_seconds 60. *. 100.) /. 100. in
   let corrected_seconds =
@@ -31,3 +31,12 @@ let dms_of_degrees degrees =
     minutes = float minutes;
     seconds = corrected_seconds;
   }
+
+let ha_of_ra right_ascension lct geog_long =
+  let ut = Timescale.ut_of_lct lct in
+  let gst = Timescale.gst_of_ut ut in
+  let lst = Timescale.hours_of_time (Timescale.lst_of_gst (gst, geog_long)) in
+  let ra = Timescale.hours_of_time right_ascension in
+  let h1 = lst -. ra in
+  let h = if h1 < 0. then 24. +. h1 else h1 in
+  Timescale.time_of_hours h
