@@ -165,14 +165,6 @@ let gst_of_ut datetime =
   let gst = gst -. (24. *. truncate_float (gst /. 24.)) in
   time_of_hours gst
 
-let%test "gst_of_ut" =
-  gst_of_ut
-    {
-      date = { day = 22.; month = 5; year = 1980 };
-      time = { hours = 14.; minutes = 36.; seconds = 51.67 };
-    }
-  = { hours = 4.; minutes = 40.; seconds = 5. }
-
 let ut_of_gst datetime =
   Printf.printf "\n-- ut_of_gst\n";
   let jd = julian_of_greenwich datetime.date in

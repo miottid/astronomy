@@ -94,6 +94,15 @@ module Time_test = struct
         date = { day = 1.; month = 7; year = 2013 };
         time = { hours = 3.; minutes = 37.; seconds = 0. };
       }
+
+  let gst_of_ut () =
+    approx_time_equal
+      (Time.gst_of_ut
+         {
+           date = { day = 22.; month = 4; year = 1980 };
+           time = { hours = 14.; minutes = 36.; seconds = 51.67 };
+         })
+      { hours = 4.; minutes = 40.; seconds = 5. }
 end
 
 let easter_day () =
@@ -129,6 +138,9 @@ let ut_of_lct () =
 let lct_of_ut () =
   Alcotest.(check bool) "lct_of_ut" true (Time_test.lct_of_ut ())
 
+let gst_of_ut () =
+  Alcotest.(check bool) "gst_of_ut" true (Time_test.gst_of_ut ())
+
 let test_set =
   [
     ("easter_day", `Quick, easter_day);
@@ -140,4 +152,5 @@ let test_set =
     ("weekday_of_date", `Quick, weekday_of_date);
     ("ut_of_lct", `Quick, ut_of_lct);
     ("lct_of_ut", `Quick, lct_of_ut);
+    ("gst_of_ut", `Quick, gst_of_ut);
   ]
