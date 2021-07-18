@@ -153,22 +153,6 @@ let lct_of_ut datetime_tz =
     time = time_of_hours lct;
   }
 
-let%test "lct_of_ut" =
-  lct_of_ut
-    {
-      datetime =
-        {
-          date = { day = 30.; month = 6; year = 2013 };
-          time = { hours = 22.; minutes = 37.; seconds = 0. };
-        };
-      tzoffset = 4.;
-      daylight = 1.;
-    }
-  = {
-      date = { day = 1.; month = 7; year = 2013 };
-      time = { hours = 3.; minutes = 37.; seconds = 0. };
-    }
-
 let gst_of_ut datetime =
   let jd = julian_of_greenwich datetime.date in
   let s = jd -. 2451545. in

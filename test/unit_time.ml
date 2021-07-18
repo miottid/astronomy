@@ -78,6 +78,22 @@ module Time_test = struct
         date = { day = 30.; month = 6; year = 2013 };
         time = { hours = 22.; minutes = 37.; seconds = 0. };
       }
+
+  let lct_of_ut () =
+    Time.lct_of_ut
+      {
+        datetime =
+          {
+            date = { day = 30.; month = 6; year = 2013 };
+            time = { hours = 22.; minutes = 37.; seconds = 0. };
+          };
+        tzoffset = 4.;
+        daylight = 1.;
+      }
+    = {
+        date = { day = 1.; month = 7; year = 2013 };
+        time = { hours = 3.; minutes = 37.; seconds = 0. };
+      }
 end
 
 let easter_day () =
@@ -110,6 +126,9 @@ let weekday_of_date () =
 let ut_of_lct () =
   Alcotest.(check bool) "ut_of_lct" true (Time_test.ut_of_lct ())
 
+let lct_of_ut () =
+  Alcotest.(check bool) "lct_of_ut" true (Time_test.lct_of_ut ())
+
 let test_set =
   [
     ("easter_day", `Quick, easter_day);
@@ -120,4 +139,5 @@ let test_set =
     ("weekday_of_julian", `Quick, weekday_of_julian);
     ("weekday_of_date", `Quick, weekday_of_date);
     ("ut_of_lct", `Quick, ut_of_lct);
+    ("lct_of_ut", `Quick, lct_of_ut);
   ]
