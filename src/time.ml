@@ -8,6 +8,9 @@ type datetime_tz = { tzoffset : float; daylight : float; datetime : datetime }
 
 let truncate_float f = float (truncate f)
 
+let pp_time time =
+  Printf.sprintf "%fh %fm %fs" time.hours time.minutes time.seconds
+
 let string_of_month = function
   | 1 -> "January"
   | 2 -> "February"
@@ -176,3 +179,10 @@ let ut_of_gst datetime =
   let b = a -. (24. *. truncate_float (a /. 24.)) in
   let ut = b *. 0.9972695663 in
   time_of_hours ut
+
+let lst_of_gst (time, geog_long_deg) =
+  let gst = hours_of_time time in
+  let offset = geog_long_deg /. 15. in
+  let lst_hours = gst +. offset in
+  let lst_hours = lst_hours -. (24. *. truncate_float (lst_hours /. 24.)) in
+  time_of_hours lst_hours

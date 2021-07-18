@@ -55,3 +55,7 @@ val gst_of_ut : datetime -> time
 
 val ut_of_gst : datetime -> time
 (** [ut_of_gst (date, time)] converts Greenwich Sideral Time to Universal Time. *)
+
+val lst_of_gst : time * float -> time
+(** [lst_of_gst time geog_long_deg] 
+    converts Greenwich Sideral Time to Local Sideral Time.*)
