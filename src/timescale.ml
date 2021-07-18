@@ -11,6 +11,8 @@ let truncate_float f = float (truncate f)
 let pp_time time =
   Printf.sprintf "%fh %fm %fs" time.hours time.minutes time.seconds
 
+let pp_date date = Printf.sprintf "%.5f/%d/%d" date.day date.month date.year
+
 let string_of_month = function
   | 1 -> "January"
   | 2 -> "February"

@@ -15,6 +15,9 @@ type datetime_tz = { tzoffset: float; daylight: float; datetime: datetime }
 val pp_time : time -> string
 (** [pp_time time] converts [time] to a human readable string. *)
 
+val pp_date : date -> string
+(** [pp_date date] converts [date] to a human readable string. *)
+
 val string_of_month : int -> string
 (** [string_of_month a] returns the month name.
     Months starts from index 1. *)
