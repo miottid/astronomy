@@ -1,14 +1,16 @@
 open Astronomy
 
-let approx_equal a b = Float.abs (a -. b) < epsilon_float
+let epsilon = 1e-6
+
+let approx_equal a b = Float.abs (a -. b) < epsilon
 
 let approx_time_equal (t1 : Timescale.time) (t2 : Timescale.time) =
-  Float.abs (t1.hours -. t2.hours) < epsilon_float
-  && Float.abs (t1.minutes -. t2.minutes) < epsilon_float
-  && Float.abs (t1.seconds -. t2.seconds) < epsilon_float
+  Float.abs (t1.hours -. t2.hours) < epsilon
+  && Float.abs (t1.minutes -. t2.minutes) < epsilon
+  && Float.abs (t1.seconds -. t2.seconds) < epsilon
 
 let approx_date_equal (d1 : Timescale.date) (d2 : Timescale.date) =
-  Float.abs (d1.day -. d2.day) < epsilon_float
+  Float.abs (d1.day -. d2.day) < epsilon
   && d1.month = d2.month && d1.year = d2.year
 
 let approx_datetime_equal (dt1 : Timescale.datetime) (dt2 : Timescale.datetime)
@@ -50,11 +52,18 @@ module Time_test = struct
       [
         (18.5, { hours = 18.; minutes = 30.; seconds = 0. });
         (22.5, { hours = 22.; minutes = 30.; seconds = 0. });
+        (18.524167, { hours = 18.; minutes = 31.; seconds = 27. });
       ]
 
   let hours_of_time () =
     validate_results Timescale.hours_of_time
-      [ ({ hours = 18.; minutes = 30.; seconds = 0. }, 18.5) ]
+      [
+        ({ hours = 18.; minutes = 30.; seconds = 0. }, 18.5);
+        ({ hours = 22.; minutes = 30.; seconds = 0. }, 22.5);
+      ]
+    && approx_equal
+         (Timescale.hours_of_time { hours = 18.; minutes = 31.; seconds = 27. })
+         18.524167
 
   let weekday_of_julian () = Timescale.weekday_of_julian 2455001.5 = 5
 
