@@ -1,1 +1,1 @@
-let () = Alcotest.run "Astronomy" [ ("Time", Unit_time.test_set) ]
+let () = Alcotest.run "Astronomy" [ ("Time", Unit_timescale.test_set) ]

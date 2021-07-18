@@ -2,16 +2,17 @@ open Astronomy
 
 let approx_equal a b = Float.abs (a -. b) < epsilon_float
 
-let approx_time_equal (t1 : Time.time) (t2 : Time.time) =
+let approx_time_equal (t1 : Timescale.time) (t2 : Timescale.time) =
   Float.abs (t1.hours -. t2.hours) < epsilon_float
   && Float.abs (t1.minutes -. t2.minutes) < epsilon_float
   && Float.abs (t1.seconds -. t2.seconds) < epsilon_float
 
-let approx_date_equal (d1 : Time.date) (d2 : Time.date) =
+let approx_date_equal (d1 : Timescale.date) (d2 : Timescale.date) =
   Float.abs (d1.day -. d2.day) < epsilon_float
   && d1.month = d2.month && d1.year = d2.year
 
-let approx_datetime_equal (dt1 : Time.datetime) (dt2 : Time.datetime) =
+let approx_datetime_equal (dt1 : Timescale.datetime) (dt2 : Timescale.datetime)
+    =
   approx_date_equal dt1.date dt2.date && approx_time_equal dt1.time dt2.time
 
 let validate_results f lst =
@@ -19,7 +20,7 @@ let validate_results f lst =
 
 module Time_test = struct
   let easter_day () =
-    validate_results Time.easter_day
+    validate_results Timescale.easter_day
       [
         (2019, { day = 21.; month = 4; year = 2019 });
         (2020, { day = 12.; month = 4; year = 2020 });
@@ -31,38 +32,38 @@ module Time_test = struct
       ]
 
   let julian_of_greenwich () =
-    validate_results Time.julian_of_greenwich
+    validate_results Timescale.julian_of_greenwich
       [
         ({ day = 19.75; month = 6; year = 2009 }, 2455002.25);
         ({ day = 12.625; month = 7; year = 2021 }, 2459408.125);
       ]
 
   let greenwich_of_julian () =
-    validate_results Time.greenwich_of_julian
+    validate_results Timescale.greenwich_of_julian
       [
         (2455002.25, { day = 19.75; month = 6; year = 2009 });
         (2459408.125, { day = 12.625; month = 7; year = 2021 });
       ]
 
   let time_of_hours () =
-    validate_results Time.time_of_hours
+    validate_results Timescale.time_of_hours
       [
         (18.5, { hours = 18.; minutes = 30.; seconds = 0. });
         (22.5, { hours = 22.; minutes = 30.; seconds = 0. });
       ]
 
   let hours_of_time () =
-    validate_results Time.hours_of_time
+    validate_results Timescale.hours_of_time
       [ ({ hours = 18.; minutes = 30.; seconds = 0. }, 18.5) ]
 
-  let weekday_of_julian () = Time.weekday_of_julian 2455001.5 = 5
+  let weekday_of_julian () = Timescale.weekday_of_julian 2455001.5 = 5
 
   let weekday_of_date () =
-    Time.weekday_of_date { day = 19.; month = 6; year = 2009 } = 5
+    Timescale.weekday_of_date { day = 19.; month = 6; year = 2009 } = 5
 
   let ut_of_lct () =
     let ut =
-      Time.ut_of_lct
+      Timescale.ut_of_lct
         {
           datetime =
             {
@@ -80,7 +81,7 @@ module Time_test = struct
       }
 
   let lct_of_ut () =
-    Time.lct_of_ut
+    Timescale.lct_of_ut
       {
         datetime =
           {
@@ -97,7 +98,7 @@ module Time_test = struct
 
   let gst_of_ut () =
     approx_time_equal
-      (Time.gst_of_ut
+      (Timescale.gst_of_ut
          {
            date = { day = 22.; month = 4; year = 1980 };
            time = { hours = 14.; minutes = 36.; seconds = 51.67 };
@@ -106,7 +107,7 @@ module Time_test = struct
 
   let ut_of_gst () =
     approx_time_equal
-      (Time.ut_of_gst
+      (Timescale.ut_of_gst
          {
            date = { day = 22.; month = 4; year = 1980 };
            time = { hours = 4.; minutes = 40.; seconds = 5.23 };
@@ -115,12 +116,14 @@ module Time_test = struct
 
   let lst_of_gst () =
     approx_time_equal
-      (Time.lst_of_gst ({ hours = 4.; minutes = 40.; seconds = 5.23 }, -64.))
+      (Timescale.lst_of_gst
+         ({ hours = 4.; minutes = 40.; seconds = 5.23 }, -64.))
       { hours = 0.; minutes = 24.; seconds = 5. }
 
   let gst_of_lst () =
     approx_time_equal
-      (Time.gst_of_lst ({ hours = 0.; minutes = 24.; seconds = 5.23 }, -64.))
+      (Timescale.gst_of_lst
+         ({ hours = 0.; minutes = 24.; seconds = 5.23 }, -64.))
       { hours = 4.; minutes = 40.; seconds = 5. }
 end
 
