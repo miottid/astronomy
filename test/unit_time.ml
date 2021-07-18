@@ -117,6 +117,11 @@ module Time_test = struct
     approx_time_equal
       (Time.lst_of_gst ({ hours = 4.; minutes = 40.; seconds = 5.23 }, -64.))
       { hours = 0.; minutes = 24.; seconds = 5. }
+
+  let gst_of_lst () =
+    approx_time_equal
+      (Time.gst_of_lst ({ hours = 0.; minutes = 24.; seconds = 5.23 }, -64.))
+      { hours = 4.; minutes = 40.; seconds = 5. }
 end
 
 let easter_day () =
@@ -161,6 +166,9 @@ let ut_of_gst () =
 let lst_of_gst () =
   Alcotest.(check bool) "lst_of_gst" true (Time_test.lst_of_gst ())
 
+let gst_of_lst () =
+  Alcotest.(check bool) "gst_of_lst" true (Time_test.gst_of_lst ())
+
 let test_set =
   [
     ("easter_day", `Quick, easter_day);
@@ -175,4 +183,5 @@ let test_set =
     ("gst_of_ut", `Quick, gst_of_ut);
     ("ut_of_gst", `Quick, ut_of_gst);
     ("lst_of_gst", `Quick, lst_of_gst);
+    ("gst_of_lst", `Quick, gst_of_lst);
   ]

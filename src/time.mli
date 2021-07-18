@@ -12,6 +12,9 @@ type datetime = { date: date; time: time }
 type datetime_tz = { tzoffset: float; daylight: float; datetime: datetime }
 (** [datetime_tz] is a date with time, daylight saving and time zone. *)
 
+val pp_time : time -> string
+(** [pp_time time] converts [time] to a human readable string. *)
+
 val string_of_month : int -> string
 (** [string_of_month a] returns the month name.
     Months starts from index 1. *)
@@ -59,3 +62,7 @@ val ut_of_gst : datetime -> time
 val lst_of_gst : time * float -> time
 (** [lst_of_gst time geog_long_deg] 
     converts Greenwich Sideral Time to Local Sideral Time.*)
+
+val gst_of_lst : time * float -> time
+(** [gst_of_lst time geog_long_deg] 
+    converts Local Sideral Time to Greenwich Sideral Time.*)

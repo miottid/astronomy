@@ -186,3 +186,10 @@ let lst_of_gst (time, geog_long_deg) =
   let lst_hours = gst +. offset in
   let lst_hours = lst_hours -. (24. *. truncate_float (lst_hours /. 24.)) in
   time_of_hours lst_hours
+
+let gst_of_lst (time, geog_long_deg) =
+  let gst = hours_of_time time in
+  let offset = geog_long_deg /. 15. in
+  let gst = gst -. offset in
+  let gst = gst -. (24. *. truncate_float (gst /. 24.)) in
+  time_of_hours gst
