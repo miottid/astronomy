@@ -1,0 +1,4 @@
+(tests
+ (names test_runner)
+ (package astronomy)
+ (libraries astronomy alcotest))
