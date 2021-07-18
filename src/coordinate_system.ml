@@ -3,6 +3,13 @@ type dms = { degrees : float; minutes : float; seconds : float }
 let pp_dms dms =
   Printf.sprintf "%fº %fm %fs" dms.degrees dms.minutes dms.seconds
 
+let degrees_of_dms dms =
+  let a = Float.abs dms.seconds /. 60. in
+  let b = (Float.abs dms.minutes +. a) /. 60. in
+  let c = Float.abs dms.degrees +. b in
+  if dms.seconds < 0. || dms.minutes < 0. || dms.seconds < 0. then -1. *. c
+  else c
+
 let dms_of_degrees degrees =
   let udec = Float.abs degrees in
   let total_seconds = udec *. 3600. in
