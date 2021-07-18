@@ -17,7 +17,7 @@ opam install .
 **Run tests:**
 
 ```shell
-dune build @test/runtest
+make test
 ```
 
 **Run playground:**
@@ -26,14 +26,8 @@ dune build @test/runtest
 dune exec examples/main.exe
 ```
 
-**Dev tools:**
-
-```shell
-opam install utop ocamlformat ocaml-lsp-server merlin ocp-indent
-```
-
 **Generate documentation:**
 
 ```shell
-dune build @doc
+make docs
 ```
