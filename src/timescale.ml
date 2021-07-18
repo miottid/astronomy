@@ -92,22 +92,29 @@ let greenwich_of_julian julian =
 
 let time_of_hours hours =
   let rounded_hours = Float.round (hours *. 10_000_000.) /. 10_000_000. in
-  let total_seconds = truncate (Float.abs rounded_hours *. 3600.) in
-  let seconds = total_seconds mod 60 in
-  let corrected_seconds = if seconds = 60 then 0 else seconds in
-  let corrected_remainder =
-    if seconds = 60 then total_seconds + 60 else total_seconds
+  let total_seconds = truncate_float (Float.abs rounded_hours *. 3600.) in
+  let seconds = Float.round (mod_float total_seconds 60. *. 100.) /. 100. in
+  let corrected_seconds =
+    if Util.approx_equal seconds 60. then 0. else seconds
   in
-  let minutes = corrected_remainder / 60 mod 60 in
-  let unsigned_hours = corrected_remainder / 3600 in
+  let corrected_remainder =
+    if Util.approx_equal seconds 60. then total_seconds +. 60.
+    else total_seconds
+  in
+  let minutes = truncate (corrected_remainder /. 60.) mod 60 in
+  let unsigned_hours = truncate (corrected_remainder /. 3600.) in
   let signed_hours =
     if hours < 0. then -1 * unsigned_hours else unsigned_hours
   in
-  {
-    hours = float signed_hours;
-    minutes = float minutes;
-    seconds = float corrected_seconds;
-  }
+  let r =
+    {
+      hours = float signed_hours;
+      minutes = float minutes;
+      seconds = corrected_seconds;
+    }
+  in
+  Printf.printf "%f -> %s\n" hours (pp_time r);
+  r
 
 let hours_of_time time =
   let a = Float.abs time.seconds /. 60. in

@@ -47,7 +47,7 @@ module Time_test = struct
       [
         (18.5, { hours = 18.; minutes = 30.; seconds = 0. });
         (22.5, { hours = 22.; minutes = 30.; seconds = 0. });
-        (18.524167, { hours = 18.; minutes = 31.; seconds = 27. });
+        (18.52416667, { hours = 18.; minutes = 31.; seconds = 27. });
       ]
 
   let hours_of_time () =
