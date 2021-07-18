@@ -166,31 +166,13 @@ let gst_of_ut datetime =
   time_of_hours gst
 
 let ut_of_gst datetime =
-  Printf.printf "\n-- ut_of_gst\n";
   let jd = julian_of_greenwich datetime.date in
-  Printf.printf "jd: %.9f\n" jd;
   let s = jd -. 2451545. in
-  Printf.printf "s: %f.9\n" s;
   let t = s /. 36525. in
-  Printf.printf "t: %.9f\n" t;
   let t0 = 6.697374558 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
-  Printf.printf "t0: %.9f\n" t0;
   let t0 = t0 -. (24. *. truncate_float (t0 /. 24.)) in
-  Printf.printf "t0: %.9f\n" t0;
   let gsthrs = hours_of_time datetime.time in
-  Printf.printf "gsthrs: %.9f\n" gsthrs;
   let a = gsthrs -. t0 in
-  (* Printf.printf "a: %.9f\n" a; *)
   let b = a -. (24. *. truncate_float (a /. 24.)) in
-  (* Printf.printf "b: %.9f\n" b; *)
   let ut = b *. 0.9972695663 in
-  (* Printf.printf "ut: %.9f\n" ut; *)
   time_of_hours ut
-
-let%test "ut_of_gst" =
-  ut_of_gst
-    {
-      date = { day = 22.; month = 4; year = 1980 };
-      time = { hours = 4.; minutes = 30.; seconds = 0. };
-    }
-  = { hours = 14.; minutes = 36.; seconds = 51. }

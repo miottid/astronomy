@@ -14,4 +14,13 @@ let () =
   let decimal =
     Time.hours_of_time { hours = 4.; minutes = 40.; seconds = 5.23 }
   in
-  Printf.printf "Decimal: %f\n" decimal
+  Printf.printf "Decimal: %f\n" decimal;
+
+  let t =
+    Time.ut_of_gst
+      {
+        date = { day = 22.; month = 4; year = 1980 };
+        time = { hours = 4.; minutes = 40.; seconds = 5.23 };
+      }
+  in
+  Printf.printf "t: %.9fh %.9fm %.9fs\n" t.hours t.minutes t.seconds

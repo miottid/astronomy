@@ -20,7 +20,6 @@
  (synopsis "OCaml astronomy library.")
  (description "Perform astronomy calculations.")
  (depends
-  (ppx_inline_test (>= 0.14.1))
   (alcotest (and (= 1.4.0) :with-test))
   (ocaml
    (>= 4.11.0))
