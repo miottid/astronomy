@@ -31,17 +31,9 @@ let dms_of_deg deg =
 
 let ha_of_ra right_ascension lct geog_long =
   let ut = Timescale.ut_of_lct lct in
-  Printf.printf "Timescale.ut_of_lct: %s, %s, %f\n"
-    (Timescale.pp_date ut.date)
-    (Timescale.pp_time ut.time)
-    (Timescale.hours_of_time ut.time);
   let gst = Timescale.gst_of_ut ut in
-  Printf.printf "GST: %s\n" (Timescale.pp_time gst);
-  Printf.printf "GST Hours: %f\n" (Timescale.hours_of_time gst);
   let lst = Timescale.hours_of_time (Timescale.lst_of_gst (gst, geog_long)) in
   let ra = Timescale.hours_of_time right_ascension in
   let h1 = lst -. ra in
   let h = if h1 < 0. then 24. +. h1 else h1 in
-  let r = Timescale.time_of_hours h in
-  Printf.printf "ha_of_ra: %s\n" (Timescale.pp_time r);
-  r
+  Timescale.time_of_hours h
