@@ -36,14 +36,16 @@ val julian_of_greenwich : date -> float
 (** [julian_of_greenwich day month year] returns the Julian date. *)
 
 val greenwich_of_julian : float -> date
-(** [greenwich_of_julian julian] converts a Julian date into a greenwich date. *)
+(** [greenwich_of_julian julian] converts a Julian date 
+    to a greenwich date. *)
 
 val time_of_hours : float -> time
 (** [time_of_hours hours] converts decimal hours to 
     hours, minutes and seconds. *)
 
 val hours_of_time : time -> float
-(** [hours_of_time hours minutes seconds] converts time to decimal hours. *)
+(** [hours_of_time hours minutes seconds] converts time to 
+    decimal hours. *)
 
 val weekday_of_julian : float -> int
 (** [weekday_of_julian jd] returns the weekday number at Greenwich.
@@ -54,16 +56,20 @@ val weekday_of_date : date -> int
     With 'Sunday' = 0. *)
 
 val ut_of_lct : datetime_tz -> datetime
-(** [ut_of_lct datetime_tz] converts Local Civil Time to Universal Time. *)
+(** [ut_of_lct datetime_tz] converts Local Civil Time to 
+    Universal Time. *)
 
 val lct_of_ut : datetime_tz -> datetime
-(** [lct_of_ut datetime_tz] converts Universal Time to Local Civil Time. *)
+(** [lct_of_ut datetime_tz] converts Universal Time to 
+    Local Civil Time. *)
 
 val gst_of_ut : datetime -> time
-(** [gst_of_ut (date, time)] converts Universal time to Greenwich Sideral Time. *)
+(** [gst_of_ut (date, time)] converts Universal time to 
+    Greenwich Sideral Time. *)
 
 val ut_of_gst : datetime -> time
-(** [ut_of_gst (date, time)] converts Greenwich Sideral Time to Universal Time. *)
+(** [ut_of_gst (date, time)] converts Greenwich Sideral Time to 
+    Universal Time. *)
 
 val lst_of_gst : time * float -> time
 (** [lst_of_gst time geog_long_deg] 
