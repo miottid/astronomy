@@ -14,12 +14,9 @@ let dms_of_deg deg =
   let udec = Float.abs deg in
   let total_seconds = udec *. 3600. in
   let seconds = Float.round (mod_float total_seconds 60. *. 100.) /. 100. in
-  let corrected_seconds =
-    if Util.approx_equal seconds 60. then 0. else seconds
-  in
+  let corrected_seconds = if seconds = 60. then 0. else seconds in
   let corrected_remainder =
-    if Util.approx_equal seconds 60. then total_seconds +. 60.
-    else total_seconds
+    if seconds = 60. then total_seconds +. 60. else total_seconds
   in
   let minutes = truncate (corrected_remainder /. 60.) mod 60 in
   let unsigned_degrees = truncate (corrected_remainder /. 3600.) in
@@ -34,9 +31,17 @@ let dms_of_deg deg =
 
 let ha_of_ra right_ascension lct geog_long =
   let ut = Timescale.ut_of_lct lct in
+  Printf.printf "Timescale.ut_of_lct: %s, %s, %f\n"
+    (Timescale.pp_date ut.date)
+    (Timescale.pp_time ut.time)
+    (Timescale.hours_of_time ut.time);
   let gst = Timescale.gst_of_ut ut in
+  Printf.printf "GST: %s\n" (Timescale.pp_time gst);
+  Printf.printf "GST Hours: %f\n" (Timescale.hours_of_time gst);
   let lst = Timescale.hours_of_time (Timescale.lst_of_gst (gst, geog_long)) in
   let ra = Timescale.hours_of_time right_ascension in
   let h1 = lst -. ra in
   let h = if h1 < 0. then 24. +. h1 else h1 in
-  Timescale.time_of_hours h
+  let r = Timescale.time_of_hours h in
+  Printf.printf "ha_of_ra: %s\n" (Timescale.pp_time r);
+  r

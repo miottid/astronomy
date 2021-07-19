@@ -1,17 +1,5 @@
 open Astronomy
 
-let approx_time_equal (t1 : Timescale.time) (t2 : Timescale.time) =
-  Util.approx_equal t1.hours t2.hours
-  && Util.approx_equal t1.minutes t2.minutes
-  && Util.approx_equal t1.seconds t2.seconds
-
-let approx_date_equal (d1 : Timescale.date) (d2 : Timescale.date) =
-  Util.approx_equal d1.day d2.day && d1.month = d2.month && d1.year = d2.year
-
-let approx_datetime_equal (dt1 : Timescale.datetime) (dt2 : Timescale.datetime)
-    =
-  approx_date_equal dt1.date dt2.date && approx_time_equal dt1.time dt2.time
-
 let validate_results f lst =
   List.fold_left (fun acc (input, output) -> acc && f input = output) true lst
 
@@ -98,34 +86,28 @@ module Time_test = struct
       }
 
   let gst_of_ut () =
-    approx_time_equal
-      (Timescale.gst_of_ut
-         {
-           date = { day = 22.; month = 4; year = 1980 };
-           time = { hours = 14.; minutes = 36.; seconds = 51.67 };
-         })
-      { hours = 4.; minutes = 40.; seconds = 5. }
+    Timescale.gst_of_ut
+      {
+        date = { day = 22.; month = 4; year = 1980 };
+        time = { hours = 14.; minutes = 36.; seconds = 51.67 };
+      }
+    = { hours = 4.; minutes = 40.; seconds = 5.23 }
 
   let ut_of_gst () =
-    approx_time_equal
-      (Timescale.ut_of_gst
-         {
-           date = { day = 22.; month = 4; year = 1980 };
-           time = { hours = 4.; minutes = 40.; seconds = 5.23 };
-         })
-      { hours = 14.; minutes = 36.; seconds = 51. }
+    Timescale.ut_of_gst
+      {
+        date = { day = 22.; month = 4; year = 1980 };
+        time = { hours = 4.; minutes = 40.; seconds = 5.23 };
+      }
+    = { hours = 14.; minutes = 36.; seconds = 51.67 }
 
   let lst_of_gst () =
-    approx_time_equal
-      (Timescale.lst_of_gst
-         ({ hours = 4.; minutes = 40.; seconds = 5.23 }, -64.))
-      { hours = 0.; minutes = 24.; seconds = 5. }
+    Timescale.lst_of_gst ({ hours = 4.; minutes = 40.; seconds = 5.23 }, -64.)
+    = { hours = 0.; minutes = 24.; seconds = 5.23 }
 
   let gst_of_lst () =
-    approx_time_equal
-      (Timescale.gst_of_lst
-         ({ hours = 0.; minutes = 24.; seconds = 5.23 }, -64.))
-      { hours = 4.; minutes = 40.; seconds = 5. }
+    Timescale.gst_of_lst ({ hours = 0.; minutes = 24.; seconds = 5.23 }, -64.)
+    = { hours = 4.; minutes = 40.; seconds = 5.23 }
 end
 
 let easter_day () =
