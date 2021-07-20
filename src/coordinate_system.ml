@@ -1,6 +1,12 @@
 type dms = { degrees : float; minutes : float; seconds : float }
 
-type horizon_coordinate = { azimuth : dms; altitude : dms }
+type horizon_coord = { azimuth : dms; altitude : dms; geog_lat : float }
+
+type equatorial_coord = {
+  hours_angle : Timescale.time;
+  declination : dms;
+  geog_lat : float;
+}
 
 let pp_dms dms =
   Printf.sprintf "%fº %fm %fs" dms.degrees dms.minutes dms.seconds
@@ -42,13 +48,13 @@ let ha_of_ra ra lct geog_long =
 
 let ra_of_ha = ha_of_ra
 
-let horizon_of_equatorial ha declination geog_lat =
-  let h = Timescale.hours_of_time ha in
+let horizon_of_equatorial equatorial =
+  let h = Timescale.hours_of_time equatorial.hours_angle in
   let h_degs = h *. 15. in
   let h_rads = Util.radians_of_degrees h_degs in
-  let dec_degs = deg_of_dms declination in
+  let dec_degs = deg_of_dms equatorial.declination in
   let dec_rads = Util.radians_of_degrees dec_degs in
-  let lat_rads = Util.radians_of_degrees geog_lat in
+  let lat_rads = Util.radians_of_degrees equatorial.geog_lat in
   let sin_a =
     (Float.sin dec_rads *. Float.sin lat_rads)
     +. (Float.cos dec_rads *. Float.cos lat_rads *. Float.cos h_rads)
@@ -62,4 +68,4 @@ let horizon_of_equatorial ha declination geog_lat =
   let az_degs = b -. (360. *. Float.floor (b /. 360.)) in
   let az = dms_of_deg az_degs in
   let alt = dms_of_deg a_degs in
-  { azimuth = az; altitude = alt }
+  { azimuth = az; altitude = alt; geog_lat = equatorial.geog_lat }

@@ -45,12 +45,15 @@ module Coordinate_system_test = struct
 
   let horizon_of_equatorial () =
     Coordinate_system.horizon_of_equatorial
-      { hours = 5.; minutes = 51.; seconds = 44. }
-      { degrees = 23.; minutes = 13.; seconds = 10. }
-      52.
+      {
+        hours_angle = { hours = 5.; minutes = 51.; seconds = 44. };
+        declination = { degrees = 23.; minutes = 13.; seconds = 10. };
+        geog_lat = 52.;
+      }
     = {
         azimuth = { degrees = 283.; minutes = 16.; seconds = 15.7 };
         altitude = { degrees = 19.; minutes = 20.; seconds = 3.64 };
+        geog_lat = 52.;
       }
 end
 
