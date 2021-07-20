@@ -3,3 +3,9 @@ val approx_equal : float -> float -> bool
 
 val roundn : float -> int -> float
 (** [roundn value dp] round numbers to [dp] decimal places. *)
+
+val radians_of_degrees : float -> float
+(** [radians_of_degrees radians] converts radians to degrees. *)
+
+val degrees_of_radians : float -> float
+(** [degrees_of_radians degrees] converts degrees to radians. *)

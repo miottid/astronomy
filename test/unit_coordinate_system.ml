@@ -29,21 +29,29 @@ module Coordinate_system_test = struct
     r = { hours = 9.; minutes = 52.; seconds = 23.66 }
 
   let ra_of_ha () =
-    let r =
-      Coordinate_system.ra_of_ha
-        { hours = 9.; minutes = 52.; seconds = 23.66 }
-        {
-          datetime =
-            {
-              date = { day = 22.; month = 4; year = 1980 };
-              time = { hours = 14.; minutes = 36.; seconds = 51.67 };
-            };
-          tzoffset = -4.;
-          daylight = 0.;
-        }
-        ~-.64.
-    in
-    r = { hours = 18.; minutes = 32.; seconds = 21. }
+    Coordinate_system.ra_of_ha
+      { hours = 9.; minutes = 52.; seconds = 23.66 }
+      {
+        datetime =
+          {
+            date = { day = 22.; month = 4; year = 1980 };
+            time = { hours = 14.; minutes = 36.; seconds = 51.67 };
+          };
+        tzoffset = -4.;
+        daylight = 0.;
+      }
+      ~-.64.
+    = { hours = 18.; minutes = 32.; seconds = 21. }
+
+  let horizon_of_equatorial () =
+    Coordinate_system.horizon_of_equatorial
+      { hours = 5.; minutes = 51.; seconds = 44. }
+      { degrees = 23.; minutes = 13.; seconds = 10. }
+      52.
+    = {
+        azimuth = { degrees = 283.; minutes = 16.; seconds = 15.7 };
+        altitude = { degrees = 19.; minutes = 20.; seconds = 3.64 };
+      }
 end
 
 let dms_of_deg () =
@@ -58,10 +66,16 @@ let ha_of_ra () =
 let ra_of_ha () =
   Alcotest.(check bool) "ra_of_ha" true (Coordinate_system_test.ra_of_ha ())
 
+let horizon_of_equatorial () =
+  Alcotest.(check bool)
+    "horizon_of_equatorial" true
+    (Coordinate_system_test.horizon_of_equatorial ())
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
     ("deg_of_dms", `Quick, deg_of_dms);
     ("ha_of_ra", `Quick, ha_of_ra);
     ("ra_of_ha", `Quick, ra_of_ha);
+    ("horizon_of_equatorial", `Quick, horizon_of_equatorial);
   ]

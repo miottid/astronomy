@@ -1,5 +1,7 @@
 type dms = { degrees : float; minutes : float; seconds : float }
 
+type horizon_coordinate = { azimuth : dms; altitude : dms }
+
 let pp_dms dms =
   Printf.sprintf "%fº %fm %fs" dms.degrees dms.minutes dms.seconds
 
@@ -39,3 +41,25 @@ let ha_of_ra ra lct geog_long =
   Timescale.time_of_hours h
 
 let ra_of_ha = ha_of_ra
+
+let horizon_of_equatorial ha declination geog_lat =
+  let h = Timescale.hours_of_time ha in
+  let h_degs = h *. 15. in
+  let h_rads = Util.radians_of_degrees h_degs in
+  let dec_degs = deg_of_dms declination in
+  let dec_rads = Util.radians_of_degrees dec_degs in
+  let lat_rads = Util.radians_of_degrees geog_lat in
+  let sin_a =
+    (Float.sin dec_rads *. Float.sin lat_rads)
+    +. (Float.cos dec_rads *. Float.cos lat_rads *. Float.cos h_rads)
+  in
+  let a_rads = Float.asin sin_a in
+  let a_degs = Util.degrees_of_radians a_rads in
+  let y = ~-.(Float.cos dec_rads) *. Float.cos lat_rads *. Float.sin h_rads in
+  let x = Float.sin dec_rads -. (Float.sin lat_rads *. sin_a) in
+  let a = Float.atan2 y x in
+  let b = Util.degrees_of_radians a in
+  let az_degs = b -. (360. *. Float.floor (b /. 360.)) in
+  let az = dms_of_deg az_degs in
+  let alt = dms_of_deg a_degs in
+  { azimuth = az; altitude = alt }
