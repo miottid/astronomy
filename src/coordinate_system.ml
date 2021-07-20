@@ -29,11 +29,13 @@ let dms_of_deg deg =
     seconds = corrected_seconds;
   }
 
-let ha_of_ra right_ascension lct geog_long =
+let ha_of_ra ra lct geog_long =
   let ut = Timescale.ut_of_lct lct in
   let gst = Timescale.gst_of_ut ut in
   let lst = Timescale.hours_of_time (Timescale.lst_of_gst (gst, geog_long)) in
-  let ra = Timescale.hours_of_time right_ascension in
+  let ra = Timescale.hours_of_time ra in
   let h1 = lst -. ra in
   let h = if h1 < 0. then 24. +. h1 else h1 in
   Timescale.time_of_hours h
+
+let ra_of_ha = ha_of_ra

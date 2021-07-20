@@ -14,5 +14,8 @@ val dms_of_deg : float -> dms
 
 val ha_of_ra : 
     Timescale.time -> Timescale.datetime_tz -> float -> Timescale.time
-(** [ha_of_ra right_ascension lct geog_long] 
-    converts Right Ascension to Hour angle. *)
+(** [ha_of_ra ra lct geog_long] converts Right Ascension to Hour angle. *)
+
+val ra_of_ha :
+    Timescale.time -> Timescale.datetime_tz -> float -> Timescale.time
+(** [ra_of_ha ha lct geog_long] converts Hour angle to Right Ascension *)
