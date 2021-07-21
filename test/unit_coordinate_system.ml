@@ -92,6 +92,12 @@ let equatorial_of_horizon () =
     "equatorial_of_horizon" true
     (Coordinate_system_test.equatorial_of_horizon ())
 
+let mean_obliquity_of_ecliptic () =
+  Alcotest.(check @@ float @@ 1e-8)
+    "mean_obliquity_of_ecliptic" 23.43805531
+    (Coordinate_system.mean_obliquity_of_ecliptic
+       { day = 6.; month = 7; year = 2009 })
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
@@ -100,4 +106,5 @@ let test_set =
     ("ra_of_ha", `Quick, ra_of_ha);
     ("horizon_of_equatorial", `Quick, horizon_of_equatorial);
     ("equatorial_of_horizon", `Quick, equatorial_of_horizon);
+    ("mean_obliquity_of_ecliptic", `Quick, mean_obliquity_of_ecliptic);
   ]

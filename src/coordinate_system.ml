@@ -93,3 +93,11 @@ let equatorial_of_horizon horizon =
     declination = dms_of_deg dec_degs;
     geog_lat = horizon.geog_lat;
   }
+
+let mean_obliquity_of_ecliptic date =
+  let jd = Timescale.julian_of_greenwich date in
+  let mjd = jd -. 2451545. in
+  let t = mjd /. 36525. in
+  let de = t *. (46.815 +. (t *. (0.0006 -. (t *. 0.00181)))) in
+  let de = de /. 3600. in
+  23.439292 -. de
