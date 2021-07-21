@@ -80,8 +80,8 @@ module Coordinate_system_test = struct
       { degrees = 139.; minutes = 41.; seconds = 10. }
       { degrees = 4.; minutes = 52.; seconds = 31. }
       { day = 6.; month = 7; year = 2009 }
-    = ( { hours = 9.; minutes = 34.; seconds = 53.32 },
-        { degrees = 19.; minutes = 32.; seconds = 6.01 } )
+    = ( { hours = 9.; minutes = 34.; seconds = 53.4 },
+        { degrees = 19.; minutes = 32.; seconds = 8.56 } )
 end
 
 let dms_of_deg () =
