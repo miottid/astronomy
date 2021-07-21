@@ -69,6 +69,12 @@ module Coordinate_system_test = struct
         geog_lat = 52.;
       }
 
+  let nutation_of_date () =
+    let long, obl =
+      Coordinate_system.nutation_of_date { day = 1.; month = 9; year = 1988 }
+    in
+    Util.approx_equal 0.001525808 long && Util.approx_equal 0.0025671 obl
+
   let equatorial_of_ecliptic () =
     Coordinate_system.equatorial_of_ecliptic
       { degrees = 139.; minutes = 41.; seconds = 10. }
@@ -100,6 +106,11 @@ let equatorial_of_horizon () =
     "equatorial_of_horizon" true
     (Coordinate_system_test.equatorial_of_horizon ())
 
+let nutation_of_date () =
+  Alcotest.(check bool)
+    "nutation_of_date" true
+    (Coordinate_system_test.nutation_of_date ())
+
 let mean_obliquity_of_ecliptic () =
   Alcotest.(check @@ float @@ 1e-8)
     "mean_obliquity_of_ecliptic" 23.43805531
@@ -119,6 +130,7 @@ let test_set =
     ("ra_of_ha", `Quick, ra_of_ha);
     ("horizon_of_equatorial", `Quick, horizon_of_equatorial);
     ("equatorial_of_horizon", `Quick, equatorial_of_horizon);
+    ("nutation_of_date", `Quick, nutation_of_date);
     ("mean_obliquity_of_ecliptic", `Quick, mean_obliquity_of_ecliptic);
     ("equatorial_of_ecliptic", `Quick, equatorial_of_ecliptic);
   ]

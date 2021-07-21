@@ -101,6 +101,26 @@ let mean_obliquity_of_ecliptic date =
   let de = de /. 3600. in
   23.439292 -. de
 
+let nutation_of_date date =
+  let jd = Timescale.julian_of_greenwich date in
+  let t = (jd -. 2415020.) /. 36525. in
+  let a_deg = 100.0021358 *. t in
+  let l1_deg = 279.6967 +. (0.000303 *. t *. t) in
+  let l_deg = l1_deg +. (360. *. (a_deg -. Float.floor a_deg)) in
+  let l_deg = l_deg -. (360. *. Float.floor (l_deg /. 360.)) in
+  let l_rad = Util.radians_of_degrees l_deg in
+  let b_deg = 5.372617 *. t in
+  let n_deg = 259.1833 -. (360. *. (b_deg -. Float.floor b_deg)) in
+  let n_deg = n_deg -. (360. *. Float.floor (n_deg /. 360.)) in
+  let n_rad = Util.radians_of_degrees n_deg in
+  let nut_long_arcsec =
+    (~-.17.2 *. Float.sin n_rad) -. (1.3 *. Float.sin (2. *. l_rad))
+  in
+  let nut_obliq_arcsec =
+    (9.2 *. Float.cos n_rad) +. (0.5 *. Float.cos (2. *. l_rad))
+  in
+  (nut_long_arcsec /. 3600., nut_obliq_arcsec /. 3600.)
+
 let equatorial_of_ecliptic ecliptic latitude date =
   let eclon_deg = deg_of_dms ecliptic in
   let eclat_deg = deg_of_dms latitude in

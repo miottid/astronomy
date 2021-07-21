@@ -39,6 +39,11 @@ val equatorial_of_horizon : horizon_coord -> equatorial_coord
 (** [equatorial_of_horizon horizon_coord]
     converts Horizon coordinate to Equatorial coordinate. *)
 
+val nutation_of_date : Timescale.date -> (float * float)
+(** [nutation_of_date date] calculate nutation in
+    ecliptic longitude and obliquity.
+    Returns the pair (nutation in longitude, nutation in obliquity). *)
+
 val mean_obliquity_of_ecliptic : Timescale.date -> float
 (** [mean_obliquity_of_ecliptic date] calculate the obliquity (in degrees)
     of the ecliptic. The angle between the planes of
