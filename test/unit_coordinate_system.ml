@@ -55,6 +55,19 @@ module Coordinate_system_test = struct
         altitude = { degrees = 19.; minutes = 20.; seconds = 3.64 };
         geog_lat = 52.;
       }
+
+  let equatorial_of_horizon () =
+    Coordinate_system.equatorial_of_horizon
+      {
+        azimuth = { degrees = 283.; minutes = 16.; seconds = 15.7 };
+        altitude = { degrees = 19.; minutes = 20.; seconds = 3.64 };
+        geog_lat = 52.;
+      }
+    = {
+        hours_angle = { hours = 5.; minutes = 51.; seconds = 44. };
+        declination = { degrees = 23.; minutes = 13.; seconds = 10. };
+        geog_lat = 52.;
+      }
 end
 
 let dms_of_deg () =
@@ -74,6 +87,11 @@ let horizon_of_equatorial () =
     "horizon_of_equatorial" true
     (Coordinate_system_test.horizon_of_equatorial ())
 
+let equatorial_of_horizon () =
+  Alcotest.(check bool)
+    "equatorial_of_horizon" true
+    (Coordinate_system_test.equatorial_of_horizon ())
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
@@ -81,4 +99,5 @@ let test_set =
     ("ha_of_ra", `Quick, ha_of_ra);
     ("ra_of_ha", `Quick, ra_of_ha);
     ("horizon_of_equatorial", `Quick, horizon_of_equatorial);
+    ("equatorial_of_horizon", `Quick, equatorial_of_horizon);
   ]

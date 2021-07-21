@@ -19,10 +19,18 @@ let degrees_of_radians () =
     "degrees_of_radians" 572.9577951308232
     (Util.degrees_of_radians 10.)
 
+let deg_of_ha () =
+  Alcotest.(check @@ float @@ epsilon_float) "deg_of_ha" 15. (Util.deg_of_ha 1.)
+
+let ha_of_deg () =
+  Alcotest.(check @@ float @@ epsilon_float) "ha_of_deg" 1. (Util.ha_of_deg 15.)
+
 let test_set =
   [
     ("approx_equal", `Quick, approx_equal);
     ("roundn", `Quick, roundn);
     ("radians_of_degrees", `Quick, radians_of_degrees);
     ("degrees_of_radians", `Quick, degrees_of_radians);
+    ("deg_of_ha", `Quick, deg_of_ha);
+    ("ha_of_deg", `Quick, ha_of_deg);
   ]

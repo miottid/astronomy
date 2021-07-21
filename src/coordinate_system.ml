@@ -69,3 +69,27 @@ let horizon_of_equatorial equatorial =
   let az = dms_of_deg az_degs in
   let alt = dms_of_deg a_degs in
   { azimuth = az; altitude = alt; geog_lat = equatorial.geog_lat }
+
+let equatorial_of_horizon horizon =
+  let az_degs = deg_of_dms horizon.azimuth in
+  let alt_degs = deg_of_dms horizon.altitude in
+  let alt_rads = Util.radians_of_degrees alt_degs in
+  let lat_rads = Util.radians_of_degrees horizon.geog_lat in
+  let az_rads = Util.radians_of_degrees az_degs in
+  let sin_dec =
+    (Float.sin alt_rads *. Float.sin lat_rads)
+    +. (Float.cos alt_rads *. Float.cos lat_rads *. Float.cos az_rads)
+  in
+  let dec_rads = Float.asin sin_dec in
+  let dec_degs = Util.degrees_of_radians dec_rads in
+  let y = ~-.(Float.cos alt_rads) *. Float.cos lat_rads *. Float.sin az_rads in
+  let x = Float.sin alt_rads -. (Float.sin lat_rads *. sin_dec) in
+  let a = Float.atan2 y x in
+  let b = Util.degrees_of_radians a in
+  let ha_degs = b -. (360. *. Float.floor (b /. 360.)) in
+  let ha_hours = Util.ha_of_deg ha_degs in
+  {
+    hours_angle = Timescale.time_of_hours ha_hours;
+    declination = dms_of_deg dec_degs;
+    geog_lat = horizon.geog_lat;
+  }
