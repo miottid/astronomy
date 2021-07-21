@@ -15,8 +15,7 @@ let deg_of_dms dms =
   let a = Float.abs dms.seconds /. 60. in
   let b = (Float.abs dms.minutes +. a) /. 60. in
   let c = Float.abs dms.degrees +. b in
-  if dms.seconds < 0. || dms.minutes < 0. || dms.seconds < 0. then -1. *. c
-  else c
+  if dms.seconds < 0. || dms.minutes < 0. || dms.seconds < 0. then ~-.c else c
 
 let dms_of_deg deg =
   let udec = Float.abs deg in
@@ -101,3 +100,27 @@ let mean_obliquity_of_ecliptic date =
   let de = t *. (46.815 +. (t *. (0.0006 -. (t *. 0.00181)))) in
   let de = de /. 3600. in
   23.439292 -. de
+
+let equatorial_of_ecliptic ecliptic latitude date =
+  let eclon_deg = deg_of_dms ecliptic in
+  let eclat_deg = deg_of_dms latitude in
+  let eclon_rad = Util.radians_of_degrees eclon_deg in
+  let eclat_rad = Util.radians_of_degrees eclat_deg in
+  let obliq_deg = mean_obliquity_of_ecliptic date in
+  let obliq_rad = Util.radians_of_degrees obliq_deg in
+  let sin_dec =
+    (Float.sin eclat_rad *. Float.cos obliq_rad)
+    +. (Float.cos eclat_rad *. Float.sin obliq_rad *. Float.sin eclon_rad)
+  in
+  let dec_rad = Float.asin sin_dec in
+  let dec_deg = Util.degrees_of_radians dec_rad in
+  let y =
+    (Float.sin eclon_rad *. Float.cos obliq_rad)
+    -. (Float.tan eclat_rad *. Float.sin obliq_rad)
+  in
+  let x = Float.cos eclon_rad in
+  let ra_rad = Float.atan2 y x in
+  let ra_deg = Util.degrees_of_radians ra_rad in
+  let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
+  let ra_hours = Util.ha_of_deg ra_deg in
+  (Timescale.time_of_hours ra_hours, dms_of_deg dec_deg)

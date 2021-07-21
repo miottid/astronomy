@@ -68,6 +68,14 @@ module Coordinate_system_test = struct
         declination = { degrees = 23.; minutes = 13.; seconds = 10. };
         geog_lat = 52.;
       }
+
+  let equatorial_of_ecliptic () =
+    Coordinate_system.equatorial_of_ecliptic
+      { degrees = 139.; minutes = 41.; seconds = 10. }
+      { degrees = 4.; minutes = 52.; seconds = 31. }
+      { day = 6.; month = 7; year = 2009 }
+    = ( { hours = 9.; minutes = 34.; seconds = 53.32 },
+        { degrees = 19.; minutes = 32.; seconds = 6.01 } )
 end
 
 let dms_of_deg () =
@@ -98,6 +106,11 @@ let mean_obliquity_of_ecliptic () =
     (Coordinate_system.mean_obliquity_of_ecliptic
        { day = 6.; month = 7; year = 2009 })
 
+let equatorial_of_ecliptic () =
+  Alcotest.(check bool)
+    "equatorial_of_ecliptic" true
+    (Coordinate_system_test.equatorial_of_ecliptic ())
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
@@ -107,4 +120,5 @@ let test_set =
     ("horizon_of_equatorial", `Quick, horizon_of_equatorial);
     ("equatorial_of_horizon", `Quick, equatorial_of_horizon);
     ("mean_obliquity_of_ecliptic", `Quick, mean_obliquity_of_ecliptic);
+    ("equatorial_of_ecliptic", `Quick, equatorial_of_ecliptic);
   ]
