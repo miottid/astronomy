@@ -7,9 +7,9 @@ type datetime = { date : date; time : time }
 type datetime_tz = { tzoffset : float; daylight : float; datetime : datetime }
 
 let pp_time time =
-  Printf.sprintf "%fh %fm %fs" time.hours time.minutes time.seconds
+  Printf.sprintf "%.2fh %.2fm %.2fs" time.hours time.minutes time.seconds
 
-let pp_date date = Printf.sprintf "%.5f/%d/%d" date.day date.month date.year
+let pp_date date = Printf.sprintf "%.4f/%d/%d" date.day date.month date.year
 
 let string_of_month = function
   | 1 -> "January"

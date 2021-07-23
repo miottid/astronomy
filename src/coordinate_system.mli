@@ -8,8 +8,7 @@ type equatorial_coord = {
     hours_angle: Timescale.time;
     declination: dms;
 }
-(** [equatorial_coord] represent the Equatorial coordinate.
-    [geog_lat] is the latitude expressed in degrees. *)
+(** [equatorial_coord] represent the Equatorial coordinate. *)
 
 type ecliptic_coord = {
     longitude: dms;
@@ -49,8 +48,9 @@ val horizon_of_equatorial : equatorial_coord -> float -> horizon_coord
     [geog_lat] is the geographical latitude. *)
 
 val equatorial_of_horizon : horizon_coord -> float -> equatorial_coord
-(** [equatorial_of_horizon horizon_coord]
-    converts Horizon coordinate to Equatorial coordinate. *)
+(** [equatorial_of_horizon horizon_coord geog_lat]
+    converts Horizon coordinate to Equatorial coordinate.
+    [geog_lat] is the geographical latitude. *)
 
 val nutation_of_date : Timescale.date -> nutation
 (** [nutation_of_date date] calculate nutation in
@@ -64,9 +64,9 @@ val mean_obliquity_of_ecliptic : Timescale.date -> float
 
 val equatorial_of_ecliptic : 
     ecliptic_coord -> Timescale.date -> equatorial_coord
-(** [equatorial_of_ecliptic ecliptic_coordinate] 
+(** [equatorial_of_ecliptic ecliptic_coordinate date]
     converts Ecliptic to Equatorial coordinate. *)
 
 val ecliptic_of_equatorial : equatorial_coord -> Timescale.date -> ecliptic_coord
-(** [ecliptic_of_equatorial equatorial]
+(** [ecliptic_of_equatorial equatorial date]
     converts Equatorial coordinate to Ecliptic coordinate. *)

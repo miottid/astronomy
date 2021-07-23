@@ -9,7 +9,7 @@ type ecliptic_coord = { longitude : dms; latitude : dms }
 type nutation = { longitude : float; obliquity : float }
 
 let pp_dms dms =
-  Printf.sprintf "%fº %fm %fs" dms.degrees dms.minutes dms.seconds
+  Printf.sprintf "%.8fº %.8fm %.8fs" dms.degrees dms.minutes dms.seconds
 
 let deg_of_dms dms =
   let a = Float.abs dms.seconds /. 60. in

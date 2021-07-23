@@ -1,4 +1,4 @@
-# astronomy
+# Astronomy
 
 OCaml library for astronomy calculations.
 

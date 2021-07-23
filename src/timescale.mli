@@ -1,7 +1,7 @@
 (** Perform date and time calculations *)
 
 type date = { day: float; month: int; year: int }
-(** [date] represent a particular day with time. *)
+(** [date] represent a particular day. *)
 
 type time = { hours: float; minutes: float; seconds: float }
 (** [time] is represent a specific time in hours, minutes and seconds. *)
