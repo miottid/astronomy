@@ -19,6 +19,12 @@ type ecliptic_coord = {
 }
 (** [ecliptic_coord] represent the Ecliptic coordinate. *)
 
+type nutation = {
+    longitude: float;
+    obliquity: float;
+}
+(** [nutation] represent the calculated nutation at a specific date. *)
+
 val pp_dms : dms -> string
 (** [pp_dms dms] converts degrees, minutes and seconds to
     an human readable string. *)
@@ -47,7 +53,7 @@ val equatorial_of_horizon : horizon_coord -> equatorial_coord
 (** [equatorial_of_horizon horizon_coord]
     converts Horizon coordinate to Equatorial coordinate. *)
 
-val nutation_of_date : Timescale.date -> (float * float)
+val nutation_of_date : Timescale.date -> nutation
 (** [nutation_of_date date] calculate nutation in
     ecliptic longitude and obliquity.
     Returns the pair (nutation in longitude, nutation in obliquity). *)

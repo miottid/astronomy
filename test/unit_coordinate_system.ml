@@ -70,10 +70,11 @@ module Coordinate_system_test = struct
       }
 
   let nutation_of_date () =
-    let long, obl =
+    let nutation =
       Coordinate_system.nutation_of_date { day = 1.; month = 9; year = 1988 }
     in
-    Util.approx_equal 0.001525808 long && Util.approx_equal 0.0025671 obl
+    Util.approx_equal 0.001525808 nutation.longitude
+    && Util.approx_equal 0.0025671 nutation.obliquity
 
   let equatorial_of_ecliptic () =
     Coordinate_system.equatorial_of_ecliptic

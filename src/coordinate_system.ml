@@ -10,6 +10,8 @@ type equatorial_coord = {
 
 type ecliptic_coord = { longitude : dms; latitude : dms; date : Timescale.date }
 
+type nutation = { longitude : float; obliquity : float }
+
 let pp_dms dms =
   Printf.sprintf "%fº %fm %fs" dms.degrees dms.minutes dms.seconds
 
@@ -113,7 +115,10 @@ let nutation_of_date date =
   let nut_obliq_arcsec =
     (9.2 *. Float.cos n_rad) +. (0.5 *. Float.cos (2. *. l_rad))
   in
-  (nut_long_arcsec /. 3600., nut_obliq_arcsec /. 3600.)
+  {
+    longitude = nut_long_arcsec /. 3600.;
+    obliquity = nut_obliq_arcsec /. 3600.;
+  }
 
 let mean_obliquity_of_ecliptic date =
   let jd = Timescale.julian_of_greenwich date in
@@ -123,13 +128,15 @@ let mean_obliquity_of_ecliptic date =
   let de = de /. 3600. in
   23.439292 -. de
 
-let equatorial_of_ecliptic ecliptic =
+let equatorial_of_ecliptic (ecliptic : ecliptic_coord) =
   let eclon_deg = deg_of_dms ecliptic.longitude in
   let eclat_deg = deg_of_dms ecliptic.latitude in
   let eclon_rad = Util.radians_of_degrees eclon_deg in
   let eclat_rad = Util.radians_of_degrees eclat_deg in
-  let _, nut_obliq = nutation_of_date ecliptic.date in
-  let obliq_deg = mean_obliquity_of_ecliptic ecliptic.date +. nut_obliq in
+  let nutation = nutation_of_date ecliptic.date in
+  let obliq_deg =
+    mean_obliquity_of_ecliptic ecliptic.date +. nutation.obliquity
+  in
   let obliq_rad = Util.radians_of_degrees obliq_deg in
   let sin_dec =
     (Float.sin eclat_rad *. Float.cos obliq_rad)
