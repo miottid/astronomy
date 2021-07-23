@@ -8,6 +8,8 @@ type equatorial_coord = {
   geog_lat : float;
 }
 
+type ecliptic_coord = { longitude : dms; latitude : dms; date : Timescale.date }
+
 let pp_dms dms =
   Printf.sprintf "%fº %fm %fs" dms.degrees dms.minutes dms.seconds
 
@@ -121,13 +123,13 @@ let mean_obliquity_of_ecliptic date =
   let de = de /. 3600. in
   23.439292 -. de
 
-let equatorial_of_ecliptic ecliptic latitude date =
-  let eclon_deg = deg_of_dms ecliptic in
-  let eclat_deg = deg_of_dms latitude in
+let equatorial_of_ecliptic ecliptic =
+  let eclon_deg = deg_of_dms ecliptic.longitude in
+  let eclat_deg = deg_of_dms ecliptic.latitude in
   let eclon_rad = Util.radians_of_degrees eclon_deg in
   let eclat_rad = Util.radians_of_degrees eclat_deg in
-  let _, nut_obliq = nutation_of_date date in
-  let obliq_deg = mean_obliquity_of_ecliptic date +. nut_obliq in
+  let _, nut_obliq = nutation_of_date ecliptic.date in
+  let obliq_deg = mean_obliquity_of_ecliptic ecliptic.date +. nut_obliq in
   let obliq_rad = Util.radians_of_degrees obliq_deg in
   let sin_dec =
     (Float.sin eclat_rad *. Float.cos obliq_rad)
@@ -146,4 +148,8 @@ let equatorial_of_ecliptic ecliptic latitude date =
   let ra_hours = Util.ha_of_deg ra_deg in
   let ra = Timescale.time_of_hours ra_hours in
   let dec = dms_of_deg dec_deg in
-  (ra, dec)
+  {
+    hours_angle = ra;
+    declination = dec;
+    geog_lat = deg_of_dms ecliptic.latitude;
+  }

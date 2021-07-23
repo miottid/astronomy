@@ -9,7 +9,15 @@ type equatorial_coord = {
     declination: dms;
     geog_lat: float;
 }
-(** [equatorial_coord] represent the Equatorial coordinate. *)
+(** [equatorial_coord] represent the Equatorial coordinate.
+    [geog_lat] is the latitude expressed in degrees. *)
+
+type ecliptic_coord = {
+    longitude: dms;
+    latitude: dms;
+    date: Timescale.date;
+}
+(** [ecliptic_coord] represent the Ecliptic coordinate. *)
 
 val pp_dms : dms -> string
 (** [pp_dms dms] converts degrees, minutes and seconds to
@@ -49,7 +57,6 @@ val mean_obliquity_of_ecliptic : Timescale.date -> float
     of the ecliptic. The angle between the planes of
     the equator and the ecliptic. *)
 
-val equatorial_of_ecliptic : 
-    dms -> dms -> Timescale.date -> (Timescale.time * dms)
-(** [equatorial_of_ecliptic ecliptic latitude date] converts Ecliptic to
-    Equatorial coordinate. *)
+val equatorial_of_ecliptic : ecliptic_coord -> equatorial_coord
+(** [equatorial_of_ecliptic ecliptic_coordinate] 
+    converts Ecliptic to Equatorial coordinate. *)
