@@ -1,12 +1,8 @@
 type dms = { degrees : float; minutes : float; seconds : float }
 
-type horizon_coord = { azimuth : dms; altitude : dms; geog_lat : float }
+type horizon_coord = { azimuth : dms; altitude : dms }
 
-type equatorial_coord = {
-  hours_angle : Timescale.time;
-  declination : dms;
-  geog_lat : float;
-}
+type equatorial_coord = { hours_angle : Timescale.time; declination : dms }
 
 type ecliptic_coord = { longitude : dms; latitude : dms }
 
@@ -51,13 +47,13 @@ let ha_of_ra ra lct geog_long =
 
 let ra_of_ha = ha_of_ra
 
-let horizon_of_equatorial equatorial =
+let horizon_of_equatorial equatorial geog_lat =
   let h = Timescale.hours_of_time equatorial.hours_angle in
   let h_degs = h *. 15. in
   let h_rads = Util.radians_of_degrees h_degs in
   let dec_degs = deg_of_dms equatorial.declination in
   let dec_rads = Util.radians_of_degrees dec_degs in
-  let lat_rads = Util.radians_of_degrees equatorial.geog_lat in
+  let lat_rads = Util.radians_of_degrees geog_lat in
   let sin_a =
     (Float.sin dec_rads *. Float.sin lat_rads)
     +. (Float.cos dec_rads *. Float.cos lat_rads *. Float.cos h_rads)
@@ -71,13 +67,13 @@ let horizon_of_equatorial equatorial =
   let az_degs = b -. (360. *. Float.floor (b /. 360.)) in
   let az = dms_of_deg az_degs in
   let alt = dms_of_deg a_degs in
-  { azimuth = az; altitude = alt; geog_lat = equatorial.geog_lat }
+  { azimuth = az; altitude = alt }
 
-let equatorial_of_horizon horizon =
+let equatorial_of_horizon horizon geog_lat =
   let az_degs = deg_of_dms horizon.azimuth in
   let alt_degs = deg_of_dms horizon.altitude in
   let alt_rads = Util.radians_of_degrees alt_degs in
-  let lat_rads = Util.radians_of_degrees horizon.geog_lat in
+  let lat_rads = Util.radians_of_degrees geog_lat in
   let az_rads = Util.radians_of_degrees az_degs in
   let sin_dec =
     (Float.sin alt_rads *. Float.sin lat_rads)
@@ -94,7 +90,6 @@ let equatorial_of_horizon horizon =
   {
     hours_angle = Timescale.time_of_hours ha_hours;
     declination = dms_of_deg dec_degs;
-    geog_lat = horizon.geog_lat;
   }
 
 let nutation_of_date date =
@@ -153,11 +148,7 @@ let equatorial_of_ecliptic (ecliptic : ecliptic_coord) date =
   let ra_hours = Util.ha_of_deg ra_deg in
   let ra = Timescale.time_of_hours ra_hours in
   let dec = dms_of_deg dec_deg in
-  {
-    hours_angle = ra;
-    declination = dec;
-    geog_lat = deg_of_dms ecliptic.latitude;
-  }
+  { hours_angle = ra; declination = dec }
 
 let ecliptic_of_equatorial (equatorial : equatorial_coord) date =
   let ra_deg =

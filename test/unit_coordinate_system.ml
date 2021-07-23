@@ -48,12 +48,11 @@ module Coordinate_system_test = struct
       {
         hours_angle = { hours = 5.; minutes = 51.; seconds = 44. };
         declination = { degrees = 23.; minutes = 13.; seconds = 10. };
-        geog_lat = 52.;
       }
+      52.
     = {
         azimuth = { degrees = 283.; minutes = 16.; seconds = 15.7 };
         altitude = { degrees = 19.; minutes = 20.; seconds = 3.64 };
-        geog_lat = 52.;
       }
 
   let equatorial_of_horizon () =
@@ -61,12 +60,11 @@ module Coordinate_system_test = struct
       {
         azimuth = { degrees = 283.; minutes = 16.; seconds = 15.7 };
         altitude = { degrees = 19.; minutes = 20.; seconds = 3.64 };
-        geog_lat = 52.;
       }
+      52.
     = {
         hours_angle = { hours = 5.; minutes = 51.; seconds = 44. };
         declination = { degrees = 23.; minutes = 13.; seconds = 10. };
-        geog_lat = 52.;
       }
 
   let nutation_of_date () =
@@ -86,7 +84,18 @@ module Coordinate_system_test = struct
     = {
         hours_angle = { hours = 9.; minutes = 34.; seconds = 53.4 };
         declination = { degrees = 19.; minutes = 32.; seconds = 8.56 };
-        geog_lat = 4.87527777777777782;
+      }
+
+  let ecliptic_of_equatorial () =
+    Coordinate_system.ecliptic_of_equatorial
+      {
+        hours_angle = { hours = 9.; minutes = 34.; seconds = 53.4 };
+        declination = { degrees = 19.; minutes = 32.; seconds = 8.56 };
+      }
+      { day = 6.; month = 7; year = 2009 }
+    = {
+        longitude = { degrees = 139.; minutes = 41.; seconds = 9.95 };
+        latitude = { degrees = 4.; minutes = 52.; seconds = 30.98 };
       }
 end
 
@@ -128,6 +137,11 @@ let equatorial_of_ecliptic () =
     "equatorial_of_ecliptic" true
     (Coordinate_system_test.equatorial_of_ecliptic ())
 
+let ecliptic_of_equatorial () =
+  Alcotest.(check bool)
+    "ecliptic_of_equatorial" true
+    (Coordinate_system_test.ecliptic_of_equatorial ())
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
@@ -139,4 +153,5 @@ let test_set =
     ("nutation_of_date", `Quick, nutation_of_date);
     ("mean_obliquity_of_ecliptic", `Quick, mean_obliquity_of_ecliptic);
     ("equatorial_of_ecliptic", `Quick, equatorial_of_ecliptic);
+    ("ecliptic_of_equatorial", `Quick, ecliptic_of_equatorial);
   ]

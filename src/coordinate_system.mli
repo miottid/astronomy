@@ -1,13 +1,12 @@
 type dms = { degrees: float; minutes: float; seconds: float }
 (** [dms] represent a coordinate in degrees, minutes and seconds. *)
 
-type horizon_coord = { azimuth: dms; altitude: dms; geog_lat: float }
+type horizon_coord = { azimuth: dms; altitude: dms }
 (** [horizon_coord] represent the Horizon coordinate. *)
 
 type equatorial_coord = {
     hours_angle: Timescale.time;
     declination: dms;
-    geog_lat: float;
 }
 (** [equatorial_coord] represent the Equatorial coordinate.
     [geog_lat] is the latitude expressed in degrees. *)
@@ -44,11 +43,12 @@ val ra_of_ha :
     Timescale.time -> Timescale.datetime_tz -> float -> Timescale.time
 (** [ra_of_ha ha lct geog_long] converts Hour angle to Right Ascension *)
 
-val horizon_of_equatorial : equatorial_coord -> horizon_coord
-(** [horizon_of_equatorial equatorial_coord]
-    converts Equatorial to Horizon coordinate. *)
+val horizon_of_equatorial : equatorial_coord -> float -> horizon_coord
+(** [horizon_of_equatorial equatorial_coord geog_lat]
+    converts Equatorial to Horizon coordinate.
+    [geog_lat] is the geographical latitude. *)
 
-val equatorial_of_horizon : horizon_coord -> equatorial_coord
+val equatorial_of_horizon : horizon_coord -> float -> equatorial_coord
 (** [equatorial_of_horizon horizon_coord]
     converts Horizon coordinate to Equatorial coordinate. *)
 
