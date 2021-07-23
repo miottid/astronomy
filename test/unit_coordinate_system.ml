@@ -81,8 +81,8 @@ module Coordinate_system_test = struct
       {
         longitude = { degrees = 139.; minutes = 41.; seconds = 10. };
         latitude = { degrees = 4.; minutes = 52.; seconds = 31. };
-        date = { day = 6.; month = 7; year = 2009 };
       }
+      { day = 6.; month = 7; year = 2009 }
     = {
         hours_angle = { hours = 9.; minutes = 34.; seconds = 53.4 };
         declination = { degrees = 19.; minutes = 32.; seconds = 8.56 };

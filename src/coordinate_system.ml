@@ -8,7 +8,7 @@ type equatorial_coord = {
   geog_lat : float;
 }
 
-type ecliptic_coord = { longitude : dms; latitude : dms; date : Timescale.date }
+type ecliptic_coord = { longitude : dms; latitude : dms }
 
 type nutation = { longitude : float; obliquity : float }
 
@@ -128,15 +128,13 @@ let mean_obliquity_of_ecliptic date =
   let de = de /. 3600. in
   23.439292 -. de
 
-let equatorial_of_ecliptic (ecliptic : ecliptic_coord) =
+let equatorial_of_ecliptic (ecliptic : ecliptic_coord) date =
   let eclon_deg = deg_of_dms ecliptic.longitude in
   let eclat_deg = deg_of_dms ecliptic.latitude in
   let eclon_rad = Util.radians_of_degrees eclon_deg in
   let eclat_rad = Util.radians_of_degrees eclat_deg in
-  let nutation = nutation_of_date ecliptic.date in
-  let obliq_deg =
-    mean_obliquity_of_ecliptic ecliptic.date +. nutation.obliquity
-  in
+  let nutation = nutation_of_date date in
+  let obliq_deg = mean_obliquity_of_ecliptic date +. nutation.obliquity in
   let obliq_rad = Util.radians_of_degrees obliq_deg in
   let sin_dec =
     (Float.sin eclat_rad *. Float.cos obliq_rad)
@@ -160,3 +158,31 @@ let equatorial_of_ecliptic (ecliptic : ecliptic_coord) =
     declination = dec;
     geog_lat = deg_of_dms ecliptic.latitude;
   }
+
+let ecliptic_of_equatorial (equatorial : equatorial_coord) date =
+  let ra_deg =
+    Util.deg_of_ha (Timescale.hours_of_time equatorial.hours_angle)
+  in
+  let dec_deg = deg_of_dms equatorial.declination in
+  let ra_rad = Util.radians_of_degrees ra_deg in
+  let dec_rad = Util.radians_of_degrees dec_deg in
+  let nutation = nutation_of_date date in
+  let obliq_deg = mean_obliquity_of_ecliptic date +. nutation.obliquity in
+  let obliq_rad = Util.radians_of_degrees obliq_deg in
+  let sin_ecl_lat =
+    (Float.sin dec_rad *. Float.cos obliq_rad)
+    -. (Float.cos dec_rad *. Float.sin obliq_rad *. Float.sin ra_rad)
+  in
+  let ecl_lat_rad = Float.asin sin_ecl_lat in
+  let ecl_lat_deg = Util.degrees_of_radians ecl_lat_rad in
+  let y =
+    (Float.sin ra_rad *. Float.cos obliq_rad)
+    +. (Float.tan dec_rad *. Float.sin obliq_rad)
+  in
+  let x = Float.cos ra_rad in
+  let ecl_long_rad = Float.atan2 y x in
+  let ecl_long_deg = Util.degrees_of_radians ecl_long_rad in
+  let ecl_long_deg =
+    ecl_long_deg -. (360. *. Float.floor (ecl_long_deg /. 360.))
+  in
+  { longitude = dms_of_deg ecl_long_deg; latitude = dms_of_deg ecl_lat_deg }

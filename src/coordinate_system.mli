@@ -15,7 +15,6 @@ type equatorial_coord = {
 type ecliptic_coord = {
     longitude: dms;
     latitude: dms;
-    date: Timescale.date;
 }
 (** [ecliptic_coord] represent the Ecliptic coordinate. *)
 
@@ -63,6 +62,11 @@ val mean_obliquity_of_ecliptic : Timescale.date -> float
     of the ecliptic. The angle between the planes of
     the equator and the ecliptic. *)
 
-val equatorial_of_ecliptic : ecliptic_coord -> equatorial_coord
+val equatorial_of_ecliptic : 
+    ecliptic_coord -> Timescale.date -> equatorial_coord
 (** [equatorial_of_ecliptic ecliptic_coordinate] 
     converts Ecliptic to Equatorial coordinate. *)
+
+val ecliptic_of_equatorial : equatorial_coord -> Timescale.date -> ecliptic_coord
+(** [ecliptic_of_equatorial equatorial]
+    converts Equatorial coordinate to Ecliptic coordinate. *)
