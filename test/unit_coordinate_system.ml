@@ -108,6 +108,17 @@ module Coordinate_system_test = struct
         latitude = { degrees = 51.; minutes = 7.; seconds = 20.16 };
         longitude = { degrees = 232.; minutes = 14.; seconds = 52.38 };
       }
+
+  let equatorial_of_galactic () = 
+    Coordinate_system.equatorial_of_galactic
+      {
+        latitude = { degrees = 51.; minutes = 7.; seconds = 20.16 };
+        longitude = { degrees = 232.; minutes = 14.; seconds = 52.38 };
+      }
+    = {
+        hours_angle = { hours = 10.; minutes = 21.; seconds = 0. };
+        declination = { degrees = 10.; minutes = 3.; seconds = 11. };
+      }
 end
 
 let dms_of_deg () =
@@ -158,6 +169,13 @@ let galactic_of_equatorial () =
     "galactic_of_equatorial" true
     (Coordinate_system_test.galactic_of_equatorial ())
 
+
+let equatorial_of_galactic () =
+  Alcotest.(check bool)
+    "equatorial_of_galactic" true
+    (Coordinate_system_test.equatorial_of_galactic ())
+    
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
@@ -171,4 +189,5 @@ let test_set =
     ("equatorial_of_ecliptic", `Quick, equatorial_of_ecliptic);
     ("ecliptic_of_equatorial", `Quick, ecliptic_of_equatorial);
     ("galactic_of_equatorial", `Quick, galactic_of_equatorial);
+    ("equatorial_of_galactic", `Quick, equatorial_of_galactic);
   ]

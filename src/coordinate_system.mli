@@ -4,23 +4,14 @@ type dms = { degrees: float; minutes: float; seconds: float }
 type horizon_coord = { azimuth: dms; altitude: dms }
 (** [horizon_coord] represent the Horizon coordinate. *)
 
-type ha_coord = {
-    hours_angle: Timescale.time;
-    declination: dms;
-}
+type ha_coord = { hours_angle: Timescale.time; declination: dms }
 (** [ha_coord] represent hours angle coordinate with declination. *)
 
-type deg_coord = {
-    longitude: dms;
-    latitude: dms;
-}
+type deg_coord = { longitude: dms; latitude: dms }
 (** [degrees_coord] represent the [latitude] and [longitude]
     expressed in degrees, minutes and seconds. *)
 
-type nutation = {
-    longitude: float;
-    obliquity: float;
-}
+type nutation = { longitude: float; obliquity: float }
 (** [nutation] represent the calculated nutation at a specific date. *)
 
 val pp_dms : dms -> string
@@ -74,3 +65,7 @@ val ecliptic_of_equatorial : ha_coord -> Timescale.date -> deg_coord
 val galactic_of_equatorial : ha_coord -> deg_coord
 (** [galactic_of_equatorial deg_coord] 
     converts Equatorial coordinate to Galactic coodinate. *)
+
+val equatorial_of_galactic : deg_coord -> ha_coord
+(** [equatorial_of_galactic deg_coord]
+    converts Galactic coordinate to Equatorial coordinate. *)

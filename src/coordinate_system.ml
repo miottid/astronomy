@@ -192,3 +192,29 @@ let galactic_of_equatorial (equatorial : ha_coord) =
   let long_deg = Util.degrees_of_radians (Float.atan2 y x) +. 33. in
   let long_deg = long_deg -. (360. *. Float.floor (long_deg /. 360.)) in
   { latitude = dms_of_deg b_deg; longitude = dms_of_deg long_deg }
+
+let equatorial_of_galactic (galactic : deg_coord) =
+  let g_long = deg_of_dms galactic.longitude
+  and g_lat = deg_of_dms galactic.latitude in
+  let g_long_rad = Util.radians_of_degrees g_long
+  and g_lat_rad = Util.radians_of_degrees g_lat in
+  let sin_dec =
+    Float.cos g_lat_rad
+    *. Float.cos (Util.radians_of_degrees 27.4)
+    *. Float.sin (g_long_rad -. Util.radians_of_degrees 33.)
+    +. (Float.sin g_lat_rad *. Float.sin (Util.radians_of_degrees 27.4))
+  in
+  let dec_rad = Float.asin sin_dec in
+  let dec_deg = Util.degrees_of_radians dec_rad
+  and y =
+    Float.cos g_lat_rad *. Float.cos (g_long_rad -. Util.radians_of_degrees 33.)
+  and x =
+    (Float.sin g_lat_rad *. Float.cos (Util.radians_of_degrees 27.4))
+    -. Float.cos g_lat_rad
+       *. Float.sin (Util.radians_of_degrees 27.4)
+       *. Float.sin (g_long_rad -. Util.radians_of_degrees 33.)
+  in
+  let ra_deg = Util.degrees_of_radians (Float.atan2 y x) +. 192.25 in
+  let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
+  let ra_hours = Util.ha_of_deg ra_deg in
+  { hours_angle = Timescale.time_of_hours ra_hours; declination = dms_of_deg dec_deg }
