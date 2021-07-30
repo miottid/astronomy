@@ -11,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Use OCaml
+      - name: Use OCaml 4.11.0
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: ocaml-base-compiler.4.11.0
