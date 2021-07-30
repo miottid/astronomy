@@ -10,7 +10,7 @@ doc: "https://github.com/miottid/astronomy"
 bug-reports: "https://github.com/miottid/astronomy/issues"
 depends: [
   "alcotest" {= "1.4.0" & with-test}
-  "ocaml" {>= "4.12.0"}
+  "ocaml" {>= "4.11.0"}
   "dune" {>= "2.8"}
   "odoc" {with-doc}
 ]
