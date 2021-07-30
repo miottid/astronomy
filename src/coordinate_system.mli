@@ -4,17 +4,18 @@ type dms = { degrees: float; minutes: float; seconds: float }
 type horizon_coord = { azimuth: dms; altitude: dms }
 (** [horizon_coord] represent the Horizon coordinate. *)
 
-type equatorial_coord = {
+type ha_coord = {
     hours_angle: Timescale.time;
     declination: dms;
 }
-(** [equatorial_coord] represent the Equatorial coordinate. *)
+(** [ha_coord] represent hours angle coordinate with declination. *)
 
-type ecliptic_coord = {
+type deg_coord = {
     longitude: dms;
     latitude: dms;
 }
-(** [ecliptic_coord] represent the Ecliptic coordinate. *)
+(** [degrees_coord] represent the [latitude] and [longitude]
+    expressed in degrees, minutes and seconds. *)
 
 type nutation = {
     longitude: float;
@@ -31,8 +32,8 @@ val deg_of_dms : dms -> float
     converts degrees, minutes and seconds to decimal degrees. *)
 
 val dms_of_deg : float -> dms
-(** [dms_of_deg degrees]
-    converts decimal degrees to degrees, minutes and seconds. *)
+(** [dms_of_deg degrees] converts decimal degrees to
+    degrees, minutes and seconds. *)
 
 val ha_of_ra :
     Timescale.time -> Timescale.datetime_tz -> float -> Timescale.time
@@ -42,12 +43,12 @@ val ra_of_ha :
     Timescale.time -> Timescale.datetime_tz -> float -> Timescale.time
 (** [ra_of_ha ha lct geog_long] converts Hour angle to Right Ascension *)
 
-val horizon_of_equatorial : equatorial_coord -> float -> horizon_coord
+val horizon_of_equatorial : ha_coord -> float -> horizon_coord
 (** [horizon_of_equatorial equatorial_coord geog_lat]
     converts Equatorial to Horizon coordinate.
     [geog_lat] is the geographical latitude. *)
 
-val equatorial_of_horizon : horizon_coord -> float -> equatorial_coord
+val equatorial_of_horizon : horizon_coord -> float -> ha_coord
 (** [equatorial_of_horizon horizon_coord geog_lat]
     converts Horizon coordinate to Equatorial coordinate.
     [geog_lat] is the geographical latitude. *)
@@ -62,11 +63,14 @@ val mean_obliquity_of_ecliptic : Timescale.date -> float
     of the ecliptic. The angle between the planes of
     the equator and the ecliptic. *)
 
-val equatorial_of_ecliptic : 
-    ecliptic_coord -> Timescale.date -> equatorial_coord
+val equatorial_of_ecliptic : deg_coord -> Timescale.date -> ha_coord
 (** [equatorial_of_ecliptic ecliptic_coordinate date]
     converts Ecliptic to Equatorial coordinate. *)
 
-val ecliptic_of_equatorial : equatorial_coord -> Timescale.date -> ecliptic_coord
+val ecliptic_of_equatorial : ha_coord -> Timescale.date -> deg_coord
 (** [ecliptic_of_equatorial equatorial date]
     converts Equatorial coordinate to Ecliptic coordinate. *)
+
+val galactic_of_equatorial : ha_coord -> deg_coord
+(** [galactic_of_equatorial deg_coord] 
+    converts Equatorial coordinate to Galactic coodinate. *)

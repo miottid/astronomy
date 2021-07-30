@@ -97,6 +97,17 @@ module Coordinate_system_test = struct
         longitude = { degrees = 139.; minutes = 41.; seconds = 9.95 };
         latitude = { degrees = 4.; minutes = 52.; seconds = 30.98 };
       }
+
+  let galactic_of_equatorial () =
+    Coordinate_system.galactic_of_equatorial
+      {
+        hours_angle = { hours = 10.; minutes = 21.; seconds = 0. };
+        declination = { degrees = 10.; minutes = 3.; seconds = 11. };
+      }
+    = {
+        latitude = { degrees = 51.; minutes = 7.; seconds = 20.16 };
+        longitude = { degrees = 232.; minutes = 14.; seconds = 52.38 };
+      }
 end
 
 let dms_of_deg () =
@@ -142,6 +153,11 @@ let ecliptic_of_equatorial () =
     "ecliptic_of_equatorial" true
     (Coordinate_system_test.ecliptic_of_equatorial ())
 
+let galactic_of_equatorial () =
+  Alcotest.(check bool)
+    "galactic_of_equatorial" true
+    (Coordinate_system_test.galactic_of_equatorial ())
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
@@ -154,4 +170,5 @@ let test_set =
     ("mean_obliquity_of_ecliptic", `Quick, mean_obliquity_of_ecliptic);
     ("equatorial_of_ecliptic", `Quick, equatorial_of_ecliptic);
     ("ecliptic_of_equatorial", `Quick, ecliptic_of_equatorial);
+    ("galactic_of_equatorial", `Quick, galactic_of_equatorial);
   ]
