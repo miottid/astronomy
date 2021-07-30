@@ -11,11 +11,11 @@ bug-reports: "https://github.com/miottid/astronomy/issues"
 depends: [
   "alcotest" {= "1.4.0" & with-test}
   "ocaml" {>= "4.11.0"}
-  "dune" {>= "2.8"}
+  "dune" {>= "2.9"}
   "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {dev}
+  ["dune" "subst" "--root" "."] {dev}
   [
     "dune"
     "build"
@@ -23,9 +23,12 @@ build: [
     name
     "-j"
     jobs
+    "--promote-install-files"
+    "false"
     "@install"
     "@runtest" {with-test}
     "@doc" {with-doc}
   ]
+  ["dune" "install" "-p" name "--create-install-files" name]
 ]
 dev-repo: "git+https://github.com/miottid/astronomy.git"
