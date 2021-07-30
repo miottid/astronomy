@@ -1,5 +1,6 @@
-(lang dune 2.8)
+(lang dune 2.9)
 (name astronomy)
+(version 1.0.0)
 
 (generate_opam_files true)
 (license MIT)
