@@ -199,7 +199,7 @@ let equatorial_of_galactic (galactic : deg_coord) =
   let g_long_rad = Util.radians_of_degrees g_long
   and g_lat_rad = Util.radians_of_degrees g_lat in
   let sin_dec =
-    Float.cos g_lat
+    Float.cos g_lat_rad
     *. Float.cos (Util.radians_of_degrees 27.4)
     *. Float.sin (g_long_rad -. Util.radians_of_degrees 33.)
     +. (Float.sin g_lat_rad *. Float.sin (Util.radians_of_degrees 27.4))
@@ -216,4 +216,8 @@ let equatorial_of_galactic (galactic : deg_coord) =
   in
   let ra_deg = Util.degrees_of_radians (Float.atan2 y x) +. 192.25 in
   let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
-  ha_of_ra (Timescale.time_of_hours ra_deg)
+  let ra_hours = Util.ha_of_deg ra_deg in
+  {
+    hours_angle = Timescale.time_of_hours ra_hours;
+    declination = dms_of_deg dec_deg;
+  }
