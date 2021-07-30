@@ -11,7 +11,7 @@ Inspired from the book [Practical Astronomy with your Calculator or Spreadsheet]
 ```shell
 opam switch create . ocaml-base-compiler.4.11.0
 eval $(opam env)
-opam install .
+opam install . alcotest merlin ocp-indent utop ocamlformat
 ```
 
 **Run tests:**
