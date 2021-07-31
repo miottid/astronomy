@@ -131,6 +131,28 @@ module Coordinate_system_test = struct
         declination = { degrees = -16.; minutes = 41.; seconds = 11. };
       }
     = { degrees = 23.; minutes = 40.; seconds = 25.86 }
+
+  let rising_setting () =
+    Coordinate_system.rising_setting
+      {
+        hours_angle = { hours = 23.; minutes = 39.; seconds = 20. };
+        declination = { degrees = 21.; minutes = 42.; seconds = 0. };
+      }
+      { day = 24.; month = 8; year = 2010 }
+      64. 30. 0.5667
+    = Some
+        {
+          rise =
+            {
+              time = { hours = 14.; minutes = 16.; seconds = 48.01 };
+              azimuth = 64.36;
+            };
+          set =
+            {
+              time = { hours = 4.; minutes = 10.; seconds = 31.17 };
+              azimuth = 295.64;
+            };
+        }
 end
 
 let dms_of_deg () =
@@ -191,6 +213,11 @@ let angle_between_objects () =
     "angle_between_objects" true
     (Coordinate_system_test.angle_between_objects ())
 
+let rising_setting () =
+  Alcotest.(check bool)
+    "rising_setting" true
+    (Coordinate_system_test.rising_setting ())
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
@@ -206,4 +233,5 @@ let test_set =
     ("galactic_of_equatorial", `Quick, galactic_of_equatorial);
     ("equatorial_of_galactic", `Quick, equatorial_of_galactic);
     ("angle_between_objects", `Quick, angle_between_objects);
+    ("rising_setting", `Quick, rising_setting);
   ]

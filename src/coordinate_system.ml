@@ -8,6 +8,10 @@ type deg_coord = { longitude : dms; latitude : dms }
 
 type nutation = { longitude : float; obliquity : float }
 
+type rise_set_status = { time : Timescale.hms; azimuth : float }
+
+type rise_set = { rise : rise_set_status; set : rise_set_status }
+
 let pp_dms dms =
   Printf.sprintf "%.8fº %.8fm %.8fs" dms.degrees dms.minutes dms.seconds
 
@@ -68,7 +72,7 @@ let horizon_of_equatorial equatorial geog_lat =
   let az = dms_of_deg az_degs and alt = dms_of_deg a_degs in
   { azimuth = az; altitude = alt }
 
-let equatorial_of_horizon horizon geog_lat =
+let equatorial_of_horizon (horizon : horizon_coord) geog_lat =
   let az_degs = deg_of_dms horizon.azimuth
   and alt_degs = deg_of_dms horizon.altitude in
   let alt_rads = Util.radians_of_degrees alt_degs
@@ -85,7 +89,7 @@ let equatorial_of_horizon horizon geog_lat =
   let a = Float.atan2 y x in
   let b = Util.degrees_of_radians a in
   let ha_degs = b -. (360. *. Float.floor (b /. 360.)) in
-  let ha_hours = Util.ha_of_deg ha_degs in
+  let ha_hours = Util.hours_of_degrees ha_degs in
   {
     hours_angle = Timescale.hms_of_hours ha_hours;
     declination = dms_of_deg dec_degs;
@@ -141,12 +145,13 @@ let equatorial_of_ecliptic (ecliptic : deg_coord) date =
   let ra_rad = Float.atan2 y x in
   let ra_deg = Util.degrees_of_radians ra_rad in
   let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
-  let ra_hours = Util.ha_of_deg ra_deg in
+  let ra_hours = Util.hours_of_degrees ra_deg in
   let ra = Timescale.hms_of_hours ra_hours and dec = dms_of_deg dec_deg in
   { hours_angle = ra; declination = dec }
 
 let ecliptic_of_equatorial (equatorial : ha_coord) date =
-  let ra_deg = Util.deg_of_ha (Timescale.hours_of_hms equatorial.hours_angle)
+  let ra_deg =
+    Util.degrees_of_hours (Timescale.hours_of_hms equatorial.hours_angle)
   and dec_deg = deg_of_dms equatorial.declination in
   let ra_rad = Util.radians_of_degrees ra_deg
   and dec_rad = Util.radians_of_degrees dec_deg in
@@ -171,7 +176,8 @@ let ecliptic_of_equatorial (equatorial : ha_coord) date =
   { longitude = dms_of_deg ecl_long_deg; latitude = dms_of_deg ecl_lat_deg }
 
 let galactic_of_equatorial (equatorial : ha_coord) =
-  let ra_deg = Util.deg_of_ha (Timescale.hours_of_hms equatorial.hours_angle)
+  let ra_deg =
+    Util.degrees_of_hours (Timescale.hours_of_hms equatorial.hours_angle)
   and dec_deg = deg_of_dms equatorial.declination in
   let ra_rad = Util.radians_of_degrees ra_deg
   and dec_rad = Util.radians_of_degrees dec_deg in
@@ -216,7 +222,7 @@ let equatorial_of_galactic (galactic : deg_coord) =
   in
   let ra_deg = Util.degrees_of_radians (Float.atan2 y x) +. 192.25 in
   let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
-  let ra_hours = Util.ha_of_deg ra_deg in
+  let ra_hours = Util.hours_of_degrees ra_deg in
   {
     hours_angle = Timescale.hms_of_hours ra_hours;
     declination = dms_of_deg dec_deg;
@@ -224,12 +230,12 @@ let equatorial_of_galactic (galactic : deg_coord) =
 
 let angle_between_objects object1 object2 =
   let ra_long_1_dec = Timescale.hours_of_hms object1.hours_angle in
-  let ra_long_1_deg = Util.deg_of_ha ra_long_1_dec in
+  let ra_long_1_deg = Util.degrees_of_hours ra_long_1_dec in
   let ra_long_1_rad = Util.radians_of_degrees ra_long_1_deg in
   let dec_lat_1_deg = deg_of_dms object1.declination in
   let dec_lat_1_rad = Util.radians_of_degrees dec_lat_1_deg in
   let ra_long_2_dec = Timescale.hours_of_hms object2.hours_angle in
-  let ra_long_2_deg = Util.deg_of_ha ra_long_2_dec in
+  let ra_long_2_deg = Util.degrees_of_hours ra_long_2_dec in
   let ra_long_2_rad = Util.radians_of_degrees ra_long_2_deg in
   let dec_lat_2_deg = deg_of_dms object2.declination in
   let dec_lat_2_rad = Util.radians_of_degrees dec_lat_2_deg in
@@ -241,3 +247,55 @@ let angle_between_objects object1 object2 =
   let d_rad = Float.acos cos_d in
   let d_deg = Util.degrees_of_radians d_rad in
   dms_of_deg d_deg
+
+let rising_setting ra date geog_long geog_lat vertical_shift =
+  let ra_hours = Timescale.hours_of_hms ra.hours_angle
+  and dec_rad = Util.radians_of_degrees (deg_of_dms ra.declination)
+  and vertical_displ_rad = Util.radians_of_degrees vertical_shift
+  and geo_lat_rad = Util.radians_of_degrees geog_lat in
+  let cos_h =
+    ~-.((Float.sin vertical_displ_rad
+        +. (Float.sin geo_lat_rad *. Float.sin dec_rad))
+       /. (Float.cos geo_lat_rad *. Float.cos dec_rad))
+  in
+  let h_hours =
+    Util.hours_of_degrees (Util.degrees_of_radians (Float.acos cos_h))
+  in
+  let lst_rise_hours =
+    ra_hours -. h_hours -. (24. *. Float.floor ((ra_hours -. h_hours) /. 24.))
+  and lst_set_hours =
+    ra_hours +. h_hours -. (24. *. Float.floor ((ra_hours +. h_hours) /. 24.))
+  and a_rad =
+    Float.acos
+      ((Float.sin dec_rad
+       +. (Float.sin vertical_displ_rad *. Float.sin geo_lat_rad))
+      /. (Float.cos vertical_displ_rad *. Float.cos geo_lat_rad))
+  in
+  let a_deg = Util.degrees_of_radians a_rad in
+  let az_rise = a_deg -. (360. *. Float.floor (a_deg /. 360.))
+  and az_set = 360. -. a_deg -. (360. *. Float.floor ((360. -. a_deg) /. 360.))
+  and ut_rise =
+    Timescale.gst_of_lst
+      ({ hours = lst_rise_hours; minutes = 0.; seconds = 0. }, geog_long)
+  in
+  let ut_rise =
+    Timescale.hours_of_hms (Timescale.ut_of_gst { date; time = ut_rise })
+  and ut_set =
+    Timescale.gst_of_lst
+      ({ hours = lst_set_hours; minutes = 0.; seconds = 0. }, geog_long)
+  in
+  let ut_set =
+    Timescale.hours_of_hms (Timescale.ut_of_gst { date; time = ut_set })
+  in
+  let ut_rise_adjusted_hours = ut_rise +. 0.008333
+  and ut_set_adjusted_hours = ut_set +. 0.008333 in
+  let never_rise = cos_h > 1. and circumpolar = cos_h < 1. in
+  if not (never_rise && circumpolar) then
+    let ut_rise = Timescale.hms_of_hours ut_rise_adjusted_hours
+    and ut_set = Timescale.hms_of_hours ut_set_adjusted_hours in
+    Some
+      {
+        rise = { time = ut_rise; azimuth = Util.roundn az_rise 2 };
+        set = { time = ut_set; azimuth = Util.roundn az_set 2 };
+      }
+  else None
