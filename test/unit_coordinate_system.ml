@@ -153,6 +153,19 @@ module Coordinate_system_test = struct
               azimuth = 295.64;
             };
         }
+
+  let low_precision_precession () =
+    Coordinate_system.low_precision_precession
+      {
+        hours_angle = { hours = 9.; minutes = 10.; seconds = 43. };
+        declination = { degrees = 14.; minutes = 23.; seconds = 25. };
+      }
+      { day = 0.923; month = 1; year = 1950 }
+      { day = 1.; month = 6; year = 1979 }
+    = {
+        hours_angle = { hours = 9.; minutes = 12.; seconds = 20.18 };
+        declination = { degrees = 14.; minutes = 16.; seconds = 9.12 };
+      }
 end
 
 let dms_of_deg () =
@@ -218,6 +231,11 @@ let rising_setting () =
     "rising_setting" true
     (Coordinate_system_test.rising_setting ())
 
+let low_precision_precession () =
+  Alcotest.(check bool)
+    "low_precision_precession" true
+    (Coordinate_system_test.low_precision_precession ())
+
 let test_set =
   [
     ("dms_of_deg", `Quick, dms_of_deg);
@@ -234,4 +252,5 @@ let test_set =
     ("equatorial_of_galactic", `Quick, equatorial_of_galactic);
     ("angle_between_objects", `Quick, angle_between_objects);
     ("rising_setting", `Quick, rising_setting);
+    ("low_precision_precession", `Quick, low_precision_precession);
   ]
