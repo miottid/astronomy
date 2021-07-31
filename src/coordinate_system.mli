@@ -14,6 +14,10 @@ type deg_coord = { longitude: dms; latitude: dms }
 type nutation = { longitude: float; obliquity: float }
 (** [nutation] represent the calculated nutation at a specific date. *)
 
+type rise_set_status = { time : Timescale.hms; azimuth : float }
+
+type rise_set = { rise : rise_set_status; set : rise_set_status }
+
 val pp_dms : dms -> string
 (** [pp_dms dms] converts degrees, minutes and seconds to
     an human readable string. *)
@@ -73,3 +77,8 @@ val equatorial_of_galactic : deg_coord -> ha_coord
 val angle_between_objects : ha_coord -> ha_coord -> dms
 (** [angle_between_objects object1 object2]
     finds the angle between two celestial objects. *)
+
+val rising_setting : 
+    ha_coord -> Timescale.date -> float -> float -> float -> rise_set option
+(** [rising_setting right_ascension longitude latitude vertical_shift]
+    finds the rising and setting. *)
