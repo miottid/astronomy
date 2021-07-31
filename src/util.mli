@@ -16,3 +16,6 @@ val degrees_of_hours : float -> float
 
 val hours_of_degrees : float -> float
 (** [hours_of_degrees degrees] converts decimal degrees to decimal hours. *)
+
+val truncate_f : float -> float
+(** [truncate_f] does the same as [truncate], but returns a float. *)

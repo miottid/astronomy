@@ -11,3 +11,5 @@ let radians_of_degrees degrees = degrees *. Float.pi /. 180.
 let degrees_of_hours hours = hours *. 15.
 
 let hours_of_degrees degrees = degrees /. 15.
+
+let truncate_f f = float (truncate f)

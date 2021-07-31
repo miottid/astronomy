@@ -88,7 +88,7 @@ let equatorial_of_horizon (horizon : horizon_coord) geog_lat =
   and x = Float.sin alt_rads -. (Float.sin lat_rads *. sin_dec) in
   let a = Float.atan2 y x in
   let b = Util.degrees_of_radians a in
-  let ha_degs = b -. (360. *. Float.floor (b /. 360.)) in
+  let ha_degs = b -. (360. *. Util.truncate_f (b /. 360.)) in
   let ha_hours = Util.hours_of_degrees ha_degs in
   {
     hours_angle = Timescale.hms_of_hours ha_hours;
@@ -100,11 +100,11 @@ let nutation_of_date date =
   let t = (jd -. 2415020.) /. 36525. in
   let a_deg = 100.0021358 *. t in
   let l1_deg = 279.6967 +. (0.000303 *. t *. t) in
-  let l_deg = l1_deg +. (360. *. (a_deg -. Float.floor a_deg)) in
-  let l_deg = l_deg -. (360. *. Float.floor (l_deg /. 360.)) in
+  let l_deg = l1_deg +. (360. *. (a_deg -. Util.truncate_f a_deg)) in
+  let l_deg = l_deg -. (360. *. Util.truncate_f (l_deg /. 360.)) in
   let l_rad = Util.radians_of_degrees l_deg and b_deg = 5.372617 *. t in
-  let n_deg = 259.1833 -. (360. *. (b_deg -. Float.floor b_deg)) in
-  let n_deg = n_deg -. (360. *. Float.floor (n_deg /. 360.)) in
+  let n_deg = 259.1833 -. (360. *. (b_deg -. Util.truncate_f b_deg)) in
+  let n_deg = n_deg -. (360. *. Util.truncate_f (n_deg /. 360.)) in
   let n_rad = Util.radians_of_degrees n_deg in
   let nut_long_arcsec =
     (~-.17.2 *. Float.sin n_rad) -. (1.3 *. Float.sin (2. *. l_rad))
@@ -144,7 +144,7 @@ let equatorial_of_ecliptic (ecliptic : deg_coord) date =
   and x = Float.cos eclon_rad in
   let ra_rad = Float.atan2 y x in
   let ra_deg = Util.degrees_of_radians ra_rad in
-  let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
+  let ra_deg = ra_deg -. (360. *. Util.truncate_f (ra_deg /. 360.)) in
   let ra_hours = Util.hours_of_degrees ra_deg in
   let ra = Timescale.hms_of_hours ra_hours and dec = dms_of_deg dec_deg in
   { hours_angle = ra; declination = dec }
@@ -171,7 +171,7 @@ let ecliptic_of_equatorial (equatorial : ha_coord) date =
   let ecl_long_rad = Float.atan2 y x in
   let ecl_long_deg = Util.degrees_of_radians ecl_long_rad in
   let ecl_long_deg =
-    ecl_long_deg -. (360. *. Float.floor (ecl_long_deg /. 360.))
+    ecl_long_deg -. (360. *. Util.truncate_f (ecl_long_deg /. 360.))
   in
   { longitude = dms_of_deg ecl_long_deg; latitude = dms_of_deg ecl_lat_deg }
 
@@ -221,7 +221,7 @@ let equatorial_of_galactic (galactic : deg_coord) =
        *. Float.sin (g_long_rad -. Util.radians_of_degrees 33.)
   in
   let ra_deg = Util.degrees_of_radians (Float.atan2 y x) +. 192.25 in
-  let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
+  let ra_deg = ra_deg -. (360. *. Util.truncate_f (ra_deg /. 360.)) in
   let ra_hours = Util.hours_of_degrees ra_deg in
   {
     hours_angle = Timescale.hms_of_hours ra_hours;
@@ -262,9 +262,11 @@ let rising_setting ra date geog_long geog_lat vertical_shift =
     Util.hours_of_degrees (Util.degrees_of_radians (Float.acos cos_h))
   in
   let lst_rise_hours =
-    ra_hours -. h_hours -. (24. *. Float.floor ((ra_hours -. h_hours) /. 24.))
+    ra_hours -. h_hours
+    -. (24. *. Util.truncate_f ((ra_hours -. h_hours) /. 24.))
   and lst_set_hours =
-    ra_hours +. h_hours -. (24. *. Float.floor ((ra_hours +. h_hours) /. 24.))
+    ra_hours +. h_hours
+    -. (24. *. Util.truncate_f ((ra_hours +. h_hours) /. 24.))
   and a_rad =
     Float.acos
       ((Float.sin dec_rad
@@ -272,8 +274,9 @@ let rising_setting ra date geog_long geog_lat vertical_shift =
       /. (Float.cos vertical_displ_rad *. Float.cos geo_lat_rad))
   in
   let a_deg = Util.degrees_of_radians a_rad in
-  let az_rise = a_deg -. (360. *. Float.floor (a_deg /. 360.))
-  and az_set = 360. -. a_deg -. (360. *. Float.floor ((360. -. a_deg) /. 360.))
+  let az_rise = a_deg -. (360. *. Util.truncate_f (a_deg /. 360.))
+  and az_set =
+    360. -. a_deg -. (360. *. Util.truncate_f ((360. -. a_deg) /. 360.))
   and ut_rise =
     Timescale.gst_of_lst
       ({ hours = lst_rise_hours; minutes = 0.; seconds = 0. }, geog_long)
