@@ -1,23 +1,17 @@
-name: Main workflow
-
-on:
-  push:
+name: test
+on: [push, pull_request]
 
 jobs:
-  build:
-    runs-on: macos-latest
+  test:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Use OCaml 4.11.0
-        uses: ocaml/setup-ocaml@v2
+      - uses: avsm/setup-ocaml@master
         with:
-          ocaml-compiler: ocaml-base-compiler.4.11.0
+          ocaml-compiler: 4.11.x
 
-      - run: opam install . --deps-only --with-test
-
+      - run: opam install --yes --deps-only --with-test .
       - run: opam exec -- dune build
-
       - run: opam exec -- dune build @test/runtest
