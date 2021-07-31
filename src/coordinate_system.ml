@@ -299,3 +299,30 @@ let rising_setting ra date geog_long geog_lat vertical_shift =
         set = { time = ut_set; azimuth = Util.roundn az_set 2 };
       }
   else None
+
+let low_precision_precession coordinate epoch1 epoch2 =
+  let ra_1_rad =
+    Util.radians_of_degrees
+      (Util.degrees_of_hours (Timescale.hours_of_hms coordinate.hours_angle))
+  and dec_1_rad = Util.radians_of_degrees (deg_of_dms coordinate.declination)
+  and t_centuries =
+    (Timescale.julian_of_greenwich epoch1 -. 2415020.) /. 36525.
+  in
+  let m_sec = 3.07234 +. (0.00186 *. t_centuries)
+  and n_arcsec = 20.0468 -. (0.0085 *. t_centuries)
+  and n_years =
+    (Timescale.julian_of_greenwich epoch2
+    -. Timescale.julian_of_greenwich epoch1)
+    /. 365.25
+  in
+  let s_1_hours =
+    (m_sec +. (n_arcsec *. Float.sin ra_1_rad *. Float.tan dec_1_rad /. 15.))
+    *. n_years /. 3600.
+  in
+  let ra_2_hours = Timescale.hours_of_hms coordinate.hours_angle +. s_1_hours
+  and s_2_deg = n_arcsec *. Float.cos ra_1_rad *. n_years /. 3600. in
+  let dec_2_deg = deg_of_dms coordinate.declination +. s_2_deg in
+  {
+    hours_angle = Timescale.hms_of_hours ra_2_hours;
+    declination = dms_of_deg dec_2_deg;
+  }

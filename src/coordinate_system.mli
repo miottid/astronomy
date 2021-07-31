@@ -82,3 +82,7 @@ val rising_setting :
     ha_coord -> Timescale.date -> float -> float -> float -> rise_set option
 (** [rising_setting right_ascension longitude latitude vertical_shift]
     finds the rising and setting. *)
+
+val low_precision_precession : ha_coord -> Timescale.date -> Timescale.date -> ha_coord
+(** [low_precision_precession ra epoch1 epoch2]
+    calculate the reduction of coordinates from [epoch1] to [epoch2] *)
