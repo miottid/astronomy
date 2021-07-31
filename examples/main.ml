@@ -7,11 +7,11 @@ let () =
   let greenwich = Timescale.greenwich_of_julian julian in
   Printf.printf "%f -> %s\n" julian (Timescale.pp_date greenwich);
 
-  let t = Timescale.time_of_hours 18.52416667 in
-  Printf.printf "%s\n" (Timescale.pp_time t);
+  let t = Timescale.hms_of_hours 18.52416667 in
+  Printf.printf "%s\n" (Timescale.pp_hms t);
 
   let decimal =
-    Timescale.hours_of_time { hours = 4.; minutes = 40.; seconds = 5.23 }
+    Timescale.hours_of_hms { hours = 4.; minutes = 40.; seconds = 5.23 }
   in
   Printf.printf "Decimal: %.8f\n" decimal;
 
@@ -22,4 +22,4 @@ let () =
         time = { hours = 4.; minutes = 40.; seconds = 5.23 };
       }
   in
-  Printf.printf "t: %s\n" (Timescale.pp_time t)
+  Printf.printf "t: %s\n" (Timescale.pp_hms t)

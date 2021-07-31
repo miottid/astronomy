@@ -4,7 +4,7 @@ type dms = { degrees: float; minutes: float; seconds: float }
 type horizon_coord = { azimuth: dms; altitude: dms }
 (** [horizon_coord] represent the Horizon coordinate. *)
 
-type ha_coord = { hours_angle: Timescale.time; declination: dms }
+type ha_coord = { hours_angle: Timescale.hms; declination: dms }
 (** [ha_coord] represent hours angle coordinate with declination. *)
 
 type deg_coord = { longitude: dms; latitude: dms }
@@ -27,11 +27,11 @@ val dms_of_deg : float -> dms
     degrees, minutes and seconds. *)
 
 val ha_of_ra :
-    Timescale.time -> Timescale.datetime_tz -> float -> Timescale.time
+    Timescale.hms -> Timescale.datetime_tz -> float -> Timescale.hms
 (** [ha_of_ra ra lct geog_long] converts Right Ascension to Hour angle. *)
 
 val ra_of_ha :
-    Timescale.time -> Timescale.datetime_tz -> float -> Timescale.time
+    Timescale.hms -> Timescale.datetime_tz -> float -> Timescale.hms
 (** [ra_of_ha ha lct geog_long] converts Hour angle to Right Ascension *)
 
 val horizon_of_equatorial : ha_coord -> float -> horizon_coord

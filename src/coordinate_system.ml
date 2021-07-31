@@ -2,7 +2,7 @@ type dms = { degrees : float; minutes : float; seconds : float }
 
 type horizon_coord = { azimuth : dms; altitude : dms }
 
-type ha_coord = { hours_angle : Timescale.time; declination : dms }
+type ha_coord = { hours_angle : Timescale.hms; declination : dms }
 
 type deg_coord = { longitude : dms; latitude : dms }
 
@@ -39,16 +39,16 @@ let dms_of_deg deg =
 let ha_of_ra ra lct geog_long =
   let ut = Timescale.ut_of_lct lct in
   let gst = Timescale.gst_of_ut ut in
-  let lst = Timescale.hours_of_time (Timescale.lst_of_gst (gst, geog_long))
-  and ra = Timescale.hours_of_time ra in
+  let lst = Timescale.hours_of_hms (Timescale.lst_of_gst (gst, geog_long))
+  and ra = Timescale.hours_of_hms ra in
   let h1 = lst -. ra in
   let h = if h1 < 0. then 24. +. h1 else h1 in
-  Timescale.time_of_hours h
+  Timescale.hms_of_hours h
 
 let ra_of_ha = ha_of_ra
 
 let horizon_of_equatorial equatorial geog_lat =
-  let h = Timescale.hours_of_time equatorial.hours_angle in
+  let h = Timescale.hours_of_hms equatorial.hours_angle in
   let h_degs = h *. 15. in
   let h_rads = Util.radians_of_degrees h_degs in
   let dec_degs = deg_of_dms equatorial.declination in
@@ -87,7 +87,7 @@ let equatorial_of_horizon horizon geog_lat =
   let ha_degs = b -. (360. *. Float.floor (b /. 360.)) in
   let ha_hours = Util.ha_of_deg ha_degs in
   {
-    hours_angle = Timescale.time_of_hours ha_hours;
+    hours_angle = Timescale.hms_of_hours ha_hours;
     declination = dms_of_deg dec_degs;
   }
 
@@ -142,11 +142,11 @@ let equatorial_of_ecliptic (ecliptic : deg_coord) date =
   let ra_deg = Util.degrees_of_radians ra_rad in
   let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
   let ra_hours = Util.ha_of_deg ra_deg in
-  let ra = Timescale.time_of_hours ra_hours and dec = dms_of_deg dec_deg in
+  let ra = Timescale.hms_of_hours ra_hours and dec = dms_of_deg dec_deg in
   { hours_angle = ra; declination = dec }
 
 let ecliptic_of_equatorial (equatorial : ha_coord) date =
-  let ra_deg = Util.deg_of_ha (Timescale.hours_of_time equatorial.hours_angle)
+  let ra_deg = Util.deg_of_ha (Timescale.hours_of_hms equatorial.hours_angle)
   and dec_deg = deg_of_dms equatorial.declination in
   let ra_rad = Util.radians_of_degrees ra_deg
   and dec_rad = Util.radians_of_degrees dec_deg in
@@ -171,7 +171,7 @@ let ecliptic_of_equatorial (equatorial : ha_coord) date =
   { longitude = dms_of_deg ecl_long_deg; latitude = dms_of_deg ecl_lat_deg }
 
 let galactic_of_equatorial (equatorial : ha_coord) =
-  let ra_deg = Util.deg_of_ha (Timescale.hours_of_time equatorial.hours_angle)
+  let ra_deg = Util.deg_of_ha (Timescale.hours_of_hms equatorial.hours_angle)
   and dec_deg = deg_of_dms equatorial.declination in
   let ra_rad = Util.radians_of_degrees ra_deg
   and dec_rad = Util.radians_of_degrees dec_deg in
@@ -218,17 +218,17 @@ let equatorial_of_galactic (galactic : deg_coord) =
   let ra_deg = ra_deg -. (360. *. Float.floor (ra_deg /. 360.)) in
   let ra_hours = Util.ha_of_deg ra_deg in
   {
-    hours_angle = Timescale.time_of_hours ra_hours;
+    hours_angle = Timescale.hms_of_hours ra_hours;
     declination = dms_of_deg dec_deg;
   }
 
 let angle_between_objects object1 object2 =
-  let ra_long_1_dec = Timescale.hours_of_time object1.hours_angle in
+  let ra_long_1_dec = Timescale.hours_of_hms object1.hours_angle in
   let ra_long_1_deg = Util.deg_of_ha ra_long_1_dec in
   let ra_long_1_rad = Util.radians_of_degrees ra_long_1_deg in
   let dec_lat_1_deg = deg_of_dms object1.declination in
   let dec_lat_1_rad = Util.radians_of_degrees dec_lat_1_deg in
-  let ra_long_2_dec = Timescale.hours_of_time object2.hours_angle in
+  let ra_long_2_dec = Timescale.hours_of_hms object2.hours_angle in
   let ra_long_2_deg = Util.deg_of_ha ra_long_2_dec in
   let ra_long_2_rad = Util.radians_of_degrees ra_long_2_deg in
   let dec_lat_2_deg = deg_of_dms object2.declination in

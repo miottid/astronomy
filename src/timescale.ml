@@ -1,12 +1,12 @@
 type date = { day : float; month : int; year : int }
 
-type time = { hours : float; minutes : float; seconds : float }
+type hms = { hours : float; minutes : float; seconds : float }
 
-type datetime = { date : date; time : time }
+type datetime = { date : date; time : hms }
 
 type datetime_tz = { tzoffset : float; daylight : float; datetime : datetime }
 
-let pp_time time =
+let pp_hms time =
   Printf.sprintf "%.2fh %.2fm %.2fs" time.hours time.minutes time.seconds
 
 let pp_date date = Printf.sprintf "%.4f/%d/%d" date.day date.month date.year
@@ -87,7 +87,7 @@ let greenwich_of_julian julian =
   let year = if month > 2.5 then d -. 4716. else d -. 4715. in
   { day; month = truncate month; year = int_of_float year }
 
-let time_of_hours hours =
+let hms_of_hours hours =
   let unsigned_decimanl = Float.abs hours in
   let total_seconds = unsigned_decimanl *. 3600. in
   let seconds = Util.roundn (mod_float total_seconds 60.) 2 in
@@ -100,7 +100,7 @@ let time_of_hours hours =
   let signed_hours = if hours < 0. then ~-.unsigned_hours else unsigned_hours in
   { hours = signed_hours; minutes; seconds = corrected_seconds }
 
-let hours_of_time time =
+let hours_of_hms time =
   let a = Float.abs time.seconds /. 60. in
   let b = (Float.abs time.minutes +. a) /. 60. in
   let c = Float.abs time.hours +. b in
@@ -113,7 +113,7 @@ let weekday_of_julian julian =
 let weekday_of_date date = weekday_of_julian (julian_of_greenwich date)
 
 let ut_of_lct lct =
-  let lct_hours = hours_of_time lct.datetime.time in
+  let lct_hours = hours_of_hms lct.datetime.time in
   let ut = lct_hours -. lct.daylight -. lct.tzoffset in
   let gday = lct.datetime.date.day +. (ut /. 24.) in
   let gdate =
@@ -127,7 +127,7 @@ let ut_of_lct lct =
   let gdate = greenwich_of_julian jd in
   let rest, _ = modf gdate.day in
   let ut = 24. *. rest in
-  let time = time_of_hours ut in
+  let time = hms_of_hours ut in
   {
     date =
       { day = Float.floor gdate.day; month = gdate.month; year = gdate.year };
@@ -135,7 +135,7 @@ let ut_of_lct lct =
   }
 
 let lct_of_ut datetime_tz =
-  let ut = hours_of_time datetime_tz.datetime.time in
+  let ut = hours_of_hms datetime_tz.datetime.time in
   let zone_time = ut +. datetime_tz.tzoffset in
   let local_time = zone_time +. datetime_tz.daylight in
   let local_jd =
@@ -146,7 +146,7 @@ let lct_of_ut datetime_tz =
   let lct = 24. *. (gdate.day -. int_day) in
   {
     date = { day = int_day; month = gdate.month; year = gdate.year };
-    time = time_of_hours lct;
+    time = hms_of_hours lct;
   }
 
 let gst_of_ut datetime =
@@ -155,11 +155,11 @@ let gst_of_ut datetime =
   let t = s /. 36525. in
   let t0 = 6.697374558 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
   let t0 = t0 -. (24. *. Float.floor (t0 /. 24.)) in
-  let ut = hours_of_time datetime.time in
+  let ut = hours_of_hms datetime.time in
   let a = ut *. 1.002737909 in
   let gst = t0 +. a in
   let gst = gst -. (24. *. Float.floor (gst /. 24.)) in
-  time_of_hours gst
+  hms_of_hours gst
 
 let ut_of_gst datetime =
   let jd = julian_of_greenwich datetime.date in
@@ -167,22 +167,22 @@ let ut_of_gst datetime =
   let t = s /. 36525. in
   let t0 = 6.697374558 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
   let t0 = t0 -. (24. *. Float.floor (t0 /. 24.)) in
-  let gsthrs = hours_of_time datetime.time in
+  let gsthrs = hours_of_hms datetime.time in
   let a = gsthrs -. t0 in
   let b = a -. (24. *. Float.floor (a /. 24.)) in
   let ut = b *. 0.9972695663 in
-  time_of_hours ut
+  hms_of_hours ut
 
 let lst_of_gst (time, geog_long_deg) =
-  let gst = hours_of_time time in
+  let gst = hours_of_hms time in
   let offset = geog_long_deg /. 15. in
   let lst_hours = gst +. offset in
   let lst_hours = lst_hours -. (24. *. Float.floor (lst_hours /. 24.)) in
-  time_of_hours lst_hours
+  hms_of_hours lst_hours
 
 let gst_of_lst (time, geog_long_deg) =
-  let gst = hours_of_time time in
+  let gst = hours_of_hms time in
   let offset = geog_long_deg /. 15. in
   let gst = gst -. offset in
   let gst = gst -. (24. *. Float.floor (gst /. 24.)) in
-  time_of_hours gst
+  hms_of_hours gst

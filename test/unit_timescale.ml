@@ -30,22 +30,22 @@ module Time_test = struct
         (2459408.125, { day = 12.625; month = 7; year = 2021 });
       ]
 
-  let time_of_hours () =
-    validate_results Timescale.time_of_hours
+  let hms_of_hours () =
+    validate_results Timescale.hms_of_hours
       [
         (18.5, { hours = 18.; minutes = 30.; seconds = 0. });
         (22.5, { hours = 22.; minutes = 30.; seconds = 0. });
         (18.52416667, { hours = 18.; minutes = 31.; seconds = 27. });
       ]
 
-  let hours_of_time () =
-    validate_results Timescale.hours_of_time
+  let hours_of_hms () =
+    validate_results Timescale.hours_of_hms
       [
         ({ hours = 18.; minutes = 30.; seconds = 0. }, 18.5);
         ({ hours = 22.; minutes = 30.; seconds = 0. }, 22.5);
       ]
     && Util.approx_equal
-         (Timescale.hours_of_time { hours = 18.; minutes = 31.; seconds = 27. })
+         (Timescale.hours_of_hms { hours = 18.; minutes = 31.; seconds = 27. })
          18.524167
 
   let weekday_of_julian () = Timescale.weekday_of_julian 2455001.5 = 5
@@ -123,11 +123,11 @@ let greenwich_of_julian () =
     "greenwich_of_julian" true
     (Time_test.greenwich_of_julian ())
 
-let time_of_hours () =
-  Alcotest.(check bool) "time_of_hours" true (Time_test.time_of_hours ())
+let hms_of_hours () =
+  Alcotest.(check bool) "hms_of_hours" true (Time_test.hms_of_hours ())
 
-let hours_of_time () =
-  Alcotest.(check bool) "hours_of_time" true (Time_test.hours_of_time ())
+let hours_of_hms () =
+  Alcotest.(check bool) "hours_of_hms" true (Time_test.hours_of_hms ())
 
 let weekday_of_julian () =
   Alcotest.(check bool)
@@ -160,8 +160,8 @@ let test_set =
     ("easter_day", `Quick, easter_day);
     ("julian_of_greenwich", `Quick, julian_of_greenwich);
     ("greenwich_of_julian", `Quick, greenwich_of_julian);
-    ("time_of_hours", `Quick, time_of_hours);
-    ("hours_of_time", `Quick, hours_of_time);
+    ("hms_of_hours", `Quick, hms_of_hours);
+    ("hours_of_hms", `Quick, hours_of_hms);
     ("weekday_of_julian", `Quick, weekday_of_julian);
     ("weekday_of_date", `Quick, weekday_of_date);
     ("ut_of_lct", `Quick, ut_of_lct);

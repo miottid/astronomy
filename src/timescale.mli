@@ -3,18 +3,18 @@
 type date = { day: float; month: int; year: int }
 (** [date] represent a particular day. *)
 
-type time = { hours: float; minutes: float; seconds: float }
-(** [time] is represent a specific time in hours, minutes and seconds. *)
+type hms = { hours: float; minutes: float; seconds: float }
+(** [hms] is represent a specific time in hours, minutes and seconds. *)
 
-type datetime = { date: date; time: time }
+type datetime = { date: date; time: hms }
 (** [datetime] is a date with time. *)
 
 type datetime_tz = { tzoffset: float; daylight: float; datetime: datetime }
 (** [datetime_tz] is a date with time, daylight saving and time zone offset.
     [daylight] and [tzoffset] are expressed in hours. *)
 
-val pp_time : time -> string
-(** [pp_time time] converts a [time] type to a human readable string.
+val pp_hms : hms -> string
+(** [pp_hms hms] converts a [hms] type to a human readable string.
     e.g.: `2.5h 15.0m 25.0s`. *)
 
 val pp_date : date -> string
@@ -39,12 +39,12 @@ val greenwich_of_julian : float -> date
 (** [greenwich_of_julian julian] converts a Julian date 
     to a greenwich date. *)
 
-val time_of_hours : float -> time
-(** [time_of_hours hours] converts decimal hours to 
+val hms_of_hours : float -> hms
+(** [hms_of_hours hours] converts decimal hours to 
     hours, minutes and seconds. *)
 
-val hours_of_time : time -> float
-(** [hours_of_time hours minutes seconds] converts time to 
+val hours_of_hms : hms -> float
+(** [hours_of_hms hours minutes seconds] converts time to 
     decimal hours. *)
 
 val weekday_of_julian : float -> int
@@ -63,18 +63,18 @@ val lct_of_ut : datetime_tz -> datetime
 (** [lct_of_ut datetime_tz] converts Universal Time to 
     Local Civil Time. *)
 
-val gst_of_ut : datetime -> time
-(** [gst_of_ut (date, time)] converts Universal time to 
+val gst_of_ut : datetime -> hms
+(** [gst_of_ut (date, hms)] converts Universal time to 
     Greenwich Sideral Time. *)
 
-val ut_of_gst : datetime -> time
-(** [ut_of_gst (date, time)] converts Greenwich Sideral Time to 
+val ut_of_gst : datetime -> hms
+(** [ut_of_gst (date, hms)] converts Greenwich Sideral Time to 
     Universal Time. *)
 
-val lst_of_gst : time * float -> time
-(** [lst_of_gst time geog_long_deg] 
+val lst_of_gst : hms * float -> hms
+(** [lst_of_gst hms geog_long_deg] 
     converts Greenwich Sideral Time to Local Sideral Time.*)
 
-val gst_of_lst : time * float -> time
+val gst_of_lst : hms * float -> hms
 (** [gst_of_lst time geog_long_deg]
     converts Local Sideral Time to Greenwich Sideral Time.*)
