@@ -76,5 +76,5 @@ val lst_of_gst : time * float -> time
     converts Greenwich Sideral Time to Local Sideral Time.*)
 
 val gst_of_lst : time * float -> time
-(** [gst_of_lst time geog_long_deg] 
+(** [gst_of_lst time geog_long_deg]
     converts Local Sideral Time to Greenwich Sideral Time.*)

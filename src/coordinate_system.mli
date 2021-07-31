@@ -69,3 +69,7 @@ val galactic_of_equatorial : ha_coord -> deg_coord
 val equatorial_of_galactic : deg_coord -> ha_coord
 (** [equatorial_of_galactic deg_coord]
     converts Galactic coordinate to Equatorial coordinate. *)
+
+val angle_between_objects : ha_coord -> ha_coord -> dms
+(** [angle_between_objects object1 object2]
+    finds the angle between two celestial objects. *)

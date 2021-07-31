@@ -221,3 +221,23 @@ let equatorial_of_galactic (galactic : deg_coord) =
     hours_angle = Timescale.time_of_hours ra_hours;
     declination = dms_of_deg dec_deg;
   }
+
+let angle_between_objects object1 object2 =
+  let ra_long_1_dec = Timescale.hours_of_time object1.hours_angle in
+  let ra_long_1_deg = Util.deg_of_ha ra_long_1_dec in
+  let ra_long_1_rad = Util.radians_of_degrees ra_long_1_deg in
+  let dec_lat_1_deg = deg_of_dms object1.declination in
+  let dec_lat_1_rad = Util.radians_of_degrees dec_lat_1_deg in
+  let ra_long_2_dec = Timescale.hours_of_time object2.hours_angle in
+  let ra_long_2_deg = Util.deg_of_ha ra_long_2_dec in
+  let ra_long_2_rad = Util.radians_of_degrees ra_long_2_deg in
+  let dec_lat_2_deg = deg_of_dms object2.declination in
+  let dec_lat_2_rad = Util.radians_of_degrees dec_lat_2_deg in
+  let cos_d =
+    (Float.sin dec_lat_1_rad *. Float.sin dec_lat_2_rad)
+    +. Float.cos dec_lat_1_rad *. Float.cos dec_lat_2_rad
+       *. Float.cos (ra_long_1_rad -. ra_long_2_rad)
+  in
+  let d_rad = Float.acos cos_d in
+  let d_deg = Util.degrees_of_radians d_rad in
+  dms_of_deg d_deg
