@@ -109,7 +109,7 @@ module Coordinate_system_test = struct
         longitude = { degrees = 232.; minutes = 14.; seconds = 52.38 };
       }
 
-  let equatorial_of_galactic () = 
+  let equatorial_of_galactic () =
     Coordinate_system.equatorial_of_galactic
       {
         latitude = { degrees = 51.; minutes = 7.; seconds = 20.16 };
@@ -119,6 +119,18 @@ module Coordinate_system_test = struct
         hours_angle = { hours = 10.; minutes = 21.; seconds = 0. };
         declination = { degrees = 10.; minutes = 3.; seconds = 11. };
       }
+
+  let angle_between_objects () =
+    Coordinate_system.angle_between_objects
+      {
+        hours_angle = { hours = 5.; minutes = 13.; seconds = 31.7 };
+        declination = { degrees = -8.; minutes = 13.; seconds = 30. };
+      }
+      {
+        hours_angle = { hours = 6.; minutes = 44.; seconds = 13.4 };
+        declination = { degrees = -16.; minutes = 41.; seconds = 11. };
+      }
+    = { degrees = 23.; minutes = 40.; seconds = 25.86 }
 end
 
 let dms_of_deg () =
@@ -169,12 +181,15 @@ let galactic_of_equatorial () =
     "galactic_of_equatorial" true
     (Coordinate_system_test.galactic_of_equatorial ())
 
-
 let equatorial_of_galactic () =
   Alcotest.(check bool)
     "equatorial_of_galactic" true
     (Coordinate_system_test.equatorial_of_galactic ())
-    
+
+let angle_between_objects () =
+  Alcotest.(check bool)
+    "angle_between_objects" true
+    (Coordinate_system_test.angle_between_objects ())
 
 let test_set =
   [
@@ -190,4 +205,5 @@ let test_set =
     ("ecliptic_of_equatorial", `Quick, ecliptic_of_equatorial);
     ("galactic_of_equatorial", `Quick, galactic_of_equatorial);
     ("equatorial_of_galactic", `Quick, equatorial_of_galactic);
+    ("angle_between_objects", `Quick, angle_between_objects);
   ]
