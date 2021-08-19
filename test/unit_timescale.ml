@@ -16,15 +16,15 @@ module Time_test = struct
         (2025, { day = 20.; month = 4; year = 2025 });
       ]
 
-  let julian_of_greenwich () =
-    validate_results Timescale.julian_of_greenwich
+  let julian_of_date () =
+    validate_results Timescale.julian_of_date
       [
         ({ day = 19.75; month = 6; year = 2009 }, 2455002.25);
         ({ day = 12.625; month = 7; year = 2021 }, 2459408.125);
       ]
 
-  let greenwich_of_julian () =
-    validate_results Timescale.greenwich_of_julian
+  let date_of_julian () =
+    validate_results Timescale.date_of_julian
       [
         (2455002.25, { day = 19.75; month = 6; year = 2009 });
         (2459408.125, { day = 12.625; month = 7; year = 2021 });
@@ -113,15 +113,11 @@ end
 let easter_day () =
   Alcotest.(check bool) "easter_day" true (Time_test.easter_day ())
 
-let julian_of_greenwich () =
-  Alcotest.(check bool)
-    "julian_of_greenwich" true
-    (Time_test.julian_of_greenwich ())
+let julian_of_date () =
+  Alcotest.(check bool) "julian_of_date" true (Time_test.julian_of_date ())
 
-let greenwich_of_julian () =
-  Alcotest.(check bool)
-    "greenwich_of_julian" true
-    (Time_test.greenwich_of_julian ())
+let date_of_julian () =
+  Alcotest.(check bool) "date_of_julian" true (Time_test.date_of_julian ())
 
 let hms_of_hours () =
   Alcotest.(check bool) "hms_of_hours" true (Time_test.hms_of_hours ())
@@ -158,8 +154,8 @@ let gst_of_lst () =
 let test_set =
   [
     ("easter_day", `Quick, easter_day);
-    ("julian_of_greenwich", `Quick, julian_of_greenwich);
-    ("greenwich_of_julian", `Quick, greenwich_of_julian);
+    ("julian_of_date", `Quick, julian_of_date);
+    ("date_of_julian", `Quick, date_of_julian);
     ("hms_of_hours", `Quick, hms_of_hours);
     ("hours_of_hms", `Quick, hours_of_hms);
     ("weekday_of_julian", `Quick, weekday_of_julian);

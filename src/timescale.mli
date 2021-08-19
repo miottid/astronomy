@@ -32,11 +32,11 @@ val string_of_weekday : int -> string
 val easter_day : int -> date
 (** [easter_day a] returns the date of Easter in the provided [year]. *)
 
-val julian_of_greenwich : date -> float
-(** [julian_of_greenwich day month year] returns the Julian date. *)
+val julian_of_date : date -> float
+(** [julian_of_date day month year] returns the Julian date. *)
 
-val greenwich_of_julian : float -> date
-(** [greenwich_of_julian julian] converts a Julian date 
+val date_of_julian : float -> date
+(** [date_of_julian julian] converts a Julian date 
     to a greenwich date. *)
 
 val hms_of_hours : float -> hms

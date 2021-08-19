@@ -51,7 +51,7 @@ let easter_day year =
   and day_of_month = ((h + l - (7 * m) + 114) mod 31) + 1 in
   { day = float day_of_month; month = month_number; year }
 
-let julian_of_greenwich date =
+let julian_of_date date =
   let yd = if date.month < 3 then date.year - 1 else date.year
   and md = if date.month < 3 then date.month + 12 else date.month in
   let a = Float.floor (float yd /. 100.) in
@@ -69,7 +69,7 @@ let julian_of_greenwich date =
   and d = Float.floor (30.6001 *. (float md +. 1.)) in
   b +. c +. d +. date.day +. 1720994.5
 
-let greenwich_of_julian julian =
+let date_of_julian julian =
   let i = Float.floor (julian +. 0.5) in
   let f = julian +. 0.5 -. i in
   let b =
@@ -110,7 +110,7 @@ let weekday_of_julian julian =
   let jd = Float.floor (julian -. 0.5) +. 0.5 in
   truncate (jd +. 1.5) mod 7
 
-let weekday_of_date date = weekday_of_julian (julian_of_greenwich date)
+let weekday_of_date date = weekday_of_julian (julian_of_date date)
 
 let ut_of_lct lct =
   let lct_hours = hours_of_hms lct.datetime.time in
@@ -123,8 +123,8 @@ let ut_of_lct lct =
       year = lct.datetime.date.year;
     }
   in
-  let jd = julian_of_greenwich gdate in
-  let gdate = greenwich_of_julian jd in
+  let jd = julian_of_date gdate in
+  let gdate = date_of_julian jd in
   let rest, _ = modf gdate.day in
   let ut = 24. *. rest in
   let time = hms_of_hours ut in
@@ -139,9 +139,9 @@ let lct_of_ut datetime_tz =
   let zone_time = ut +. datetime_tz.tzoffset in
   let local_time = zone_time +. datetime_tz.daylight in
   let local_jd =
-    julian_of_greenwich datetime_tz.datetime.date +. (local_time /. 24.)
+    julian_of_date datetime_tz.datetime.date +. (local_time /. 24.)
   in
-  let gdate = greenwich_of_julian local_jd in
+  let gdate = date_of_julian local_jd in
   let int_day = Float.floor gdate.day in
   let lct = 24. *. (gdate.day -. int_day) in
   {
@@ -150,7 +150,7 @@ let lct_of_ut datetime_tz =
   }
 
 let gst_of_ut datetime =
-  let jd = julian_of_greenwich datetime.date in
+  let jd = julian_of_date datetime.date in
   let s = jd -. 2451545. in
   let t = s /. 36525. in
   let t0 = 6.697374558 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in
@@ -162,7 +162,7 @@ let gst_of_ut datetime =
   hms_of_hours gst
 
 let ut_of_gst datetime =
-  let jd = julian_of_greenwich datetime.date in
+  let jd = julian_of_date datetime.date in
   let s = jd -. 2451545. in
   let t = s /. 36525. in
   let t0 = 6.697374558 +. (2400.051336 *. t) +. (0.000025862 *. t *. t) in

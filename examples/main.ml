@@ -2,9 +2,9 @@ open Astronomy
 
 let () =
   let julian =
-    Timescale.julian_of_greenwich { day = 19.75; month = 6; year = 2009 }
+    Timescale.julian_of_date { day = 19.75; month = 6; year = 2009 }
   in
-  let greenwich = Timescale.greenwich_of_julian julian in
+  let greenwich = Timescale.date_of_julian julian in
   Printf.printf "%f -> %s\n" julian (Timescale.pp_date greenwich);
 
   let t = Timescale.hms_of_hours 18.52416667 in

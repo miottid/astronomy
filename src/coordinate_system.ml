@@ -96,7 +96,7 @@ let equatorial_of_horizon (horizon : horizon_coord) geog_lat =
   }
 
 let nutation_of_date date =
-  let jd = Timescale.julian_of_greenwich date in
+  let jd = Timescale.julian_of_date date in
   let t = (jd -. 2415020.) /. 36525. in
   let a_deg = 100.0021358 *. t in
   let l1_deg = 279.6967 +. (0.000303 *. t *. t) in
@@ -117,7 +117,7 @@ let nutation_of_date date =
   }
 
 let mean_obliquity_of_ecliptic date =
-  let jd = Timescale.julian_of_greenwich date in
+  let jd = Timescale.julian_of_date date in
   let mjd = jd -. 2451545. in
   let t = mjd /. 36525. in
   let de = t *. (46.815 +. (t *. (0.0006 -. (t *. 0.00181)))) in
@@ -305,14 +305,11 @@ let low_precision_precession coordinate epoch1 epoch2 =
     Util.radians_of_degrees
       (Util.degrees_of_hours (Timescale.hours_of_hms coordinate.hours_angle))
   and dec_1_rad = Util.radians_of_degrees (deg_of_dms coordinate.declination)
-  and t_centuries =
-    (Timescale.julian_of_greenwich epoch1 -. 2415020.) /. 36525.
-  in
+  and t_centuries = (Timescale.julian_of_date epoch1 -. 2415020.) /. 36525. in
   let m_sec = 3.07234 +. (0.00186 *. t_centuries)
   and n_arcsec = 20.0468 -. (0.0085 *. t_centuries)
   and n_years =
-    (Timescale.julian_of_greenwich epoch2
-    -. Timescale.julian_of_greenwich epoch1)
+    (Timescale.julian_of_date epoch2 -. Timescale.julian_of_date epoch1)
     /. 365.25
   in
   let s_1_hours =
