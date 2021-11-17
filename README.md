@@ -11,24 +11,15 @@ Inspired from the book [Practical Astronomy with your Calculator or Spreadsheet]
 ```shell
 opam switch create 4.13.1
 eval $(opam env)
-opam install --yes --deps-only --with-test .
-opam install alcotest merlin ocp-indent utop ocamlformat ocaml-lsp-server odoc
+opam install --yes --deps-only --with-test . # Library dependencies
+opam install alcotest merlin ocp-indent utop ocamlformat ocaml-lsp-server odoc # Development dependencies
 ```
 
-**Run tests:**
+**Commands:**
 
 ```shell
-make test
-```
-
-**Run playground:**
-
-```shell
-dune exec examples/main.exe
-```
-
-**Generate documentation:**
-
-```shell
-make docs
+make test # Run tests
+make docs # Build documentation
+dune exec examples/main.exe # Run playground
+make build # Build library
 ```
