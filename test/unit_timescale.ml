@@ -3,7 +3,7 @@ open Astronomy
 let validate_results f lst =
   List.fold_left (fun acc (input, output) -> acc && f input = output) true lst
 
-module Time_test = struct
+module Timescale_test = struct
   let easter_day () =
     validate_results Timescale.easter_day
       [
@@ -111,45 +111,45 @@ module Time_test = struct
 end
 
 let easter_day () =
-  Alcotest.(check bool) "easter_day" true (Time_test.easter_day ())
+  Alcotest.(check bool) "easter_day" true (Timescale_test.easter_day ())
 
 let julian_of_date () =
-  Alcotest.(check bool) "julian_of_date" true (Time_test.julian_of_date ())
+  Alcotest.(check bool) "julian_of_date" true (Timescale_test.julian_of_date ())
 
 let date_of_julian () =
-  Alcotest.(check bool) "date_of_julian" true (Time_test.date_of_julian ())
+  Alcotest.(check bool) "date_of_julian" true (Timescale_test.date_of_julian ())
 
 let hms_of_hours () =
-  Alcotest.(check bool) "hms_of_hours" true (Time_test.hms_of_hours ())
+  Alcotest.(check bool) "hms_of_hours" true (Timescale_test.hms_of_hours ())
 
 let hours_of_hms () =
-  Alcotest.(check bool) "hours_of_hms" true (Time_test.hours_of_hms ())
+  Alcotest.(check bool) "hours_of_hms" true (Timescale_test.hours_of_hms ())
 
 let weekday_of_julian () =
   Alcotest.(check bool)
     "weekday_of_julian" true
-    (Time_test.weekday_of_julian ())
+    (Timescale_test.weekday_of_julian ())
 
 let weekday_of_date () =
-  Alcotest.(check bool) "weekday_of_date" true (Time_test.weekday_of_date ())
+  Alcotest.(check bool) "weekday_of_date" true (Timescale_test.weekday_of_date ())
 
 let ut_of_lct () =
-  Alcotest.(check bool) "ut_of_lct" true (Time_test.ut_of_lct ())
+  Alcotest.(check bool) "ut_of_lct" true (Timescale_test.ut_of_lct ())
 
 let lct_of_ut () =
-  Alcotest.(check bool) "lct_of_ut" true (Time_test.lct_of_ut ())
+  Alcotest.(check bool) "lct_of_ut" true (Timescale_test.lct_of_ut ())
 
 let gst_of_ut () =
-  Alcotest.(check bool) "gst_of_ut" true (Time_test.gst_of_ut ())
+  Alcotest.(check bool) "gst_of_ut" true (Timescale_test.gst_of_ut ())
 
 let ut_of_gst () =
-  Alcotest.(check bool) "ut_of_gst" true (Time_test.ut_of_gst ())
+  Alcotest.(check bool) "ut_of_gst" true (Timescale_test.ut_of_gst ())
 
 let lst_of_gst () =
-  Alcotest.(check bool) "lst_of_gst" true (Time_test.lst_of_gst ())
+  Alcotest.(check bool) "lst_of_gst" true (Timescale_test.lst_of_gst ())
 
 let gst_of_lst () =
-  Alcotest.(check bool) "gst_of_lst" true (Time_test.gst_of_lst ())
+  Alcotest.(check bool) "gst_of_lst" true (Timescale_test.gst_of_lst ())
 
 let test_set =
   [
