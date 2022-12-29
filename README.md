@@ -9,7 +9,7 @@ Inspired from the book [Practical Astronomy with your Calculator or Spreadsheet]
 **Setup opam environment:**
 
 ```shell
-opam switch create 4.13.1
+opam switch create 5.0.0
 eval $(opam env)
 opam install --yes --deps-only --with-test . # Library dependencies
 opam install alcotest merlin ocp-indent utop ocamlformat ocaml-lsp-server odoc # Development dependencies

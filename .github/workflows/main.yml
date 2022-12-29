@@ -10,7 +10,7 @@ jobs:
 
       - uses: avsm/setup-ocaml@master
         with:
-          ocaml-compiler: 4.13.1
+          ocaml-compiler: 5.0.0
 
       - run: opam install --yes --deps-only --with-test .
       - run: opam exec -- dune build

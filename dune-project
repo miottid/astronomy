@@ -23,5 +23,5 @@
  (depends
   (alcotest (and (= 1.4.0) :with-test))
   (ocaml
-   (>= 4.11.0))
+   (>= 5.0.0))
   dune))
